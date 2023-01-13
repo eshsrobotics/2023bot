@@ -1,13 +1,16 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
+import edu.wpi.first.math.kinematics.MecanumDriveKinematics;
+import edu.wpi.first.math.kinematics.MecanumDriveOdometry;
+import edu.wpi.first.math.kinematics.MecanumDriveWheelPositions;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
+import edu.wpi.first.wpilibj.drive.MecanumDrive;
 import edu.wpi.first.wpilibj.motorcontrol.PWMMotorController;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import frc.robot.Constants;
 
 /**
  * This subsystem controls the drive motors for our robot's West Coast drive. We
@@ -22,25 +25,33 @@ public class VroomSubsystem implements Subsystem {
     private PWMMotorController frontLeft;
 
     /**
-     * Uses motor groups to drive bot.
+     * In order to make a drive with four Mecanum wheels go _vroom_, you need to apply the
+     * Mecanum formula to calculate all four wheel speeds.  Fortunately, WPILib has a handy
+     * class we can use to do this already.
+     * 
+     * This class is _only_ used to drive during teleop.  During autonomous, we use a
+     * {@link HolonomicDriveController} instead.
      */
-    private DifferentialDrive differentialDrive;
+    private MecanumDrive drive;
+
 
     /**
-     * Groups together the motors on the left side of the chassis.
+     * {@link MecanumDriveKinematics} are one of the necessary prerequisite for {@link MecanumDriveOdometry}.
      */
-    private MotorControllerGroup leftMotorGroup;
-    private MotorControllerGroup rightMotorGroup;
+    private MecanumDriveKinematics kinematics;
 
     /**
      * Keeps track of the bot's position in space.
      */
-    private DifferentialDriveOdometry differentialDriveOdometry;
+    private MecanumDriveOdometry mecanumDriveOdometry;
 
     private ADXRS450_Gyro gyro;
-
+    
+    /**
+     * The constructor initializes the vroom subsystem.
+     */
     public VroomSubsystem() {
-        backRight = new Spark(4);
+        backRight = new Spark(Constants.STATIC_WIDTH_INCHES);
         frontRight = new Spark(3);
         rightMotorGroup = new MotorControllerGroup(backRight, frontRight);
         backLeft = new Spark(2);
@@ -66,14 +77,17 @@ public class VroomSubsystem implements Subsystem {
         differentialDriveOdometry.resetPosition(gyro.getRotation2d(), 0, 0, new Pose2d());
     }
 
-    private double getEncoderLeftMeters() {
-        // TODO: Put in code to get the left encoder and convert to meter.
-        return 0.0;
-    }
-
-    private double getEncoderRightMeters() {
-        // TODO: Put in code to get the right encoder and convert to meter.
-        return 0.0;
+    /**
+     * A essential prerequisite for the {@link MecanumDriveOdometry}, this function 
+     * returns the total distance the wheels have traveled in meters.
+     * 
+     * <p>TODO: These values are fake, replace when we get encoders.</p>
+     * 
+     * @return Four encoder-measured distances.
+     */
+    private MecanumDriveWheelPositions getEncodersDistanceMeters() {
+        MecanumDriveWheelPositions result = new MecanumDriveWheelPositions(0, 0, 0, 0);
+        return result;
     }
 
     @Override
@@ -86,3 +100,4 @@ public class VroomSubsystem implements Subsystem {
     }
 
 }
+   

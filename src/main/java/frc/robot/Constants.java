@@ -12,4 +12,29 @@ package frc.robot;
  * <p>It is advised to statically import this class (or one of its inner classes) wherever the
  * constants are needed, to reduce verbosity.
  */
-public final class Constants {}
+public final class Constants {
+    /**
+     * Width of the chassis drivebase (from the center of a wheel on the left to the center of 
+     * a wheel on the right.)
+     * 
+     * <p>TODO: This value is **FAKE**.  Replace with measured values.</p>
+     */
+    public final static double CHASSIS_WIDTH_INCHES = 10.0; 
+
+    /**
+     * Length of the chassis drivebase (from the center of a wheel on the front to 
+     * the center of a wheel on the back)
+     * 
+     * <p>TODO: This value is **FAKE**.  Replace with measured values.</p>
+     */
+    public final static double CHASSIS_LENGTH_INCHES = 10.0;
+
+    /**
+     * Drive PWM port assignments
+     */
+    public final static int BACK_LEFT_PWM_PORT = 2;
+    public final static int FRONT_LEFT_PWM_PORT = 1;
+    public final static int FRONT_RIGHT_PWM_PORT = 4;
+    public final static int BACK_RIGHT_PWM_PORT = 3;
+
+}
