@@ -50,11 +50,11 @@ public class VroomSubsystem implements Subsystem {
 
         // TODO: Make sure that gyro is stabilized before calling differentialDriveOdometery.
         gyro = new ADXRS450_Gyro();
-        // differentialDriveOdometry = new DifferentialDriveOdometry(gyro.getRotation2d(), 
-        //                                                           getEncoderLeftMeters(), 
-        //                                                           getEncoderRightMeters());
+        differentialDriveOdometry = new DifferentialDriveOdometry(gyro.getRotation2d(), 
+                                                                  getEncoderLeftMeters(), 
+                                                                  getEncoderRightMeters());
 
-        differentialDriveOdometry = new DifferentialDriveOdometry(gyro.getRotation2d());
+        // differentialDriveOdometry = new DifferentialDriveOdometry(gyro.getRotation2d());
     }
 
     /**
@@ -63,7 +63,7 @@ public class VroomSubsystem implements Subsystem {
      */
     public void reset() {
         // TODO: Put in code to reset the encoders and gyros
-        differentialDriveOdometry.resetPosition(new Pose2d(), gyro.getRotation2d());
+        differentialDriveOdometry.resetPosition(gyro.getRotation2d(), 0, 0, new Pose2d());
     }
 
     private double getEncoderLeftMeters() {
