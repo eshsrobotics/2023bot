@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.MecanumDriveKinematics;
 import edu.wpi.first.math.kinematics.MecanumDriveOdometry;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelPositions;
@@ -51,13 +52,15 @@ public class VroomSubsystem implements Subsystem {
      * The constructor initializes the vroom subsystem.
      */
     public VroomSubsystem() {
-        backRight = new Spark(Constants.STATIC_WIDTH_INCHES);
-        frontRight = new Spark(3);
-        rightMotorGroup = new MotorControllerGroup(backRight, frontRight);
-        backLeft = new Spark(2);
-        frontLeft = new Spark(1);
-        leftMotorGroup = new MotorControllerGroup(backLeft, frontLeft);
-        differentialDrive = new DifferentialDrive(leftMotorGroup, rightMotorGroup);
+        backRight = new Spark(Constants.BACK_RIGHT_PWM_PORT);
+        frontRight = new Spark(Constants.FRONT_RIGHT_PWM_PORT);
+        backLeft = new Spark(Constants.BACK_LEFT_PWM_PORT);
+        frontLeft = new Spark(Constants.FRONT_LEFT_PWM_PORT);
+        drive = new MecanumDrive(frontLeft, backLeft, frontRight, backRight);
+        kinematics = new MecanumDriveKinematics(new Translation2d(-Constants.CHASSIS_WIDTH_INCHES / 2, Constants.CHASSIS_LENGTH_INCHES / 2),
+                                                new Translation2d(Constants.CHASSIS_WIDTH_INCHES / 2, Constants.CHASSIS_LENGTH_INCHES / 2),
+                                                new Translation2d(-Constants.CHASSIS_WIDTH_INCHES / 2, -Constants.CHASSIS_LENGTH_INCHES / 2),
+                                                new Translation2d(Constants.CHASSIS_WIDTH_INCHES / 2, -Constants.CHASSIS_LENGTH_INCHES / 2));
 
         // TODO: Make sure that gyro is stabilized before calling differentialDriveOdometery.
         gyro = new ADXRS450_Gyro();
