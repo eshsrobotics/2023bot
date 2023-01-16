@@ -1,15 +1,21 @@
 package frc.robot.subsystems;
 
+import java.util.ResourceBundle.Control;
+
 import edu.wpi.first.math.controller.HolonomicDriveController;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.MecanumDriveKinematics;
 import edu.wpi.first.math.kinematics.MecanumDriveOdometry;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelPositions;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
 import edu.wpi.first.wpilibj.motorcontrol.PWMMotorController;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
+import edu.wpi.first.wpilibj2.command.PIDCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.Constants;
 
@@ -46,7 +52,14 @@ public class VroomSubsystem implements Subsystem {
      */
     private MecanumDriveOdometry mecanumDriveOdometry;
 
+    /**
+     * Keeps track of the robot's rotation since the last call to {@link #reset()}.
+     */
     private ADXRS450_Gyro gyro;
+
+    private PIDController frontBackPidController;
+    private PIDController leftRightPidController;
+    private ProfiledPIDController profiledRotationPidContoller;
     
     /**
      * The constructor initializes the vroom subsystem.
@@ -64,20 +77,28 @@ public class VroomSubsystem implements Subsystem {
 
         // TODO: Make sure that gyro is stabilized before calling differentialDriveOdometery.
         gyro = new ADXRS450_Gyro();
-        differentialDriveOdometry = new DifferentialDriveOdometry(gyro.getRotation2d(), 
-                                                                  getEncoderLeftMeters(), 
-                                                                  getEncoderRightMeters());
-
-        // differentialDriveOdometry = new DifferentialDriveOdometry(gyro.getRotation2d());
+        mecanumDriveOdometry = new MecanumDriveOdometry(kinematics, gyro.getRotation2d(), getEncodersDistanceMeters());
+        frontBackPidController = new PIDController(Constants.P_FRONT_BACK, Constants.I_FRONT_BACK, Constants.D_FRONT_BACK);
+        leftRightPidController = new PIDController(Constants.P_LEFT_RIGHT, Constants.I_LEFT_RIGHT, Constants.D_LEFT_RIGHT);
+        profiledRotationPidContoller = new ProfiledPIDController(Constants.P_PROFILED_ROTATION,
+                                                                 Constants.I_PROFILED_ROTATION,
+                                                                 Constants.D_PROFILED_ROTATION, 
+                                                                 new Constraints(Constants.MAXIMUM_VELOCITY_INCHES_PER_SECOND,
+                                                                                 Constants.MAXIMUM_ACCELERATION_INCHES_PER_SECOND_SQUARED));
     }
 
+    
+
     /**
-     * Resets gyros and drive base encoders of the bot. Call this during the
-     * beginning of a match por favor.
+     * Resets the starting position of the robot to be (0, 0). Call this during the
+     * beginning of a match right before autonomous, por favor.
      */
-    public void reset() {
-        // TODO: Put in code to reset the encoders and gyros
-        differentialDriveOdometry.resetPosition(gyro.getRotation2d(), 0, 0, new Pose2d());
+    public void reset() 
+        // After reset, we assume the the current position on the felid is 0, 0.
+        // TODO: Put in code to reset the encoders.
+        gyro.reset();
+        final Pose2d assumedPoseOnReset = new Pose2d(0, 0, gyro.getRotation2d());
+        mecanumDriveOdometry.resetPosition(gyro.getRotation2d(), getEncodersDistanceMeters(), assumedPoseOnReset);
     }
 
     /**
@@ -97,9 +118,8 @@ public class VroomSubsystem implements Subsystem {
     public void periodic() {
         // TODO Auto-generated method stub
         Subsystem.super.periodic();
-        differentialDriveOdometry.update(gyro.getRotation2d(), 
-                                         getEncoderLeftMeters(), 
-                                         getEncoderRightMeters());
+        mecanumDriveOdometry.update(gyro.getRotation2d(), getEncodersDistanceMeters());
+        
     }
 
 }

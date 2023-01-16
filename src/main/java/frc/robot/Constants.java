@@ -37,4 +37,60 @@ public final class Constants {
     public final static int FRONT_RIGHT_PWM_PORT = 4;
     public final static int BACK_RIGHT_PWM_PORT = 3;
 
-}
+    /**
+     * Proportional constant for forward axis PID controller.
+     */
+    public final static double P_FRONT_BACK = 1.0;
+
+    /**
+     * Integral constant for forward axis PID controller. The value is at 0 to avoid integral windup.
+     */
+    public final static double I_FRONT_BACK = 0;
+
+    /**
+     * Derivative constant for forward axis PID controller.
+     */
+    public final static double D_FRONT_BACK = 0.1;
+
+    /**
+     * Proportional constant for horizontal axis PID controller.
+     */
+    public final static double P_LEFT_RIGHT = 1.0;
+
+     /**
+     * Integral constant for horizontal axis PID controller.
+     */
+    public final static double I_LEFT_RIGHT = 0;
+
+     /**
+     * Derivative constant for horizontal axis PID controller.
+     */
+    public final static double D_LEFT_RIGHT = 0.1;
+
+     /**
+     * Proportional constant for the profiled rotation PID controller.
+     */ 
+    public final static double P_PROFILED_ROTATION = 1.0;
+
+     /**
+     * Integral constant for the profiled rotation PID controller.
+     */ 
+    public final static double I_PROFILED_ROTATION = 0;
+
+    /**
+     * Derivative constant for the profiled rotation PID controller.
+     */ 
+    public final static double D_PROFILED_ROTATION = 0.1;
+
+    /**
+     * Puts an acceleration constraint on the profiled rotation PID controller.
+     */
+    public final static double MAXIMUM_ACCELERATION_INCHES_PER_SECOND_SQUARED = 10.0;
+
+    /**
+     * Puts a velocity constraint on the profiled rotation PID controller. 
+     */
+    public final static double MAXIMUM_VELOCITY_INCHES_PER_SECOND = 10.0;
+} 
+
+
