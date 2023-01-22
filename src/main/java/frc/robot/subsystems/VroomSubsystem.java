@@ -130,9 +130,11 @@ public class VroomSubsystem implements Subsystem {
             // TODO: Max's code goes here
         } else {
             // Teleop runs here
+            // Field-oriented mecanum
             drive.driveCartesian(inputSubsystem.getFrontBack(),
-                                 inputSubsystem.getRightLeft(),
-                                 inputSubsystem.getRotation());
+                                 inputSubsystem.getLeftRight(),
+                                 inputSubsystem.getRotation(),
+                                 gyro.getRotation2d());
         }
     }
 

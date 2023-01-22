@@ -91,6 +91,22 @@ public final class Constants {
      * Puts a velocity constraint on the profiled rotation PID controller. 
      */
     public final static double MAXIMUM_VELOCITY_INCHES_PER_SECOND = 10.0;
+
+    /**
+     * If an Xbox controller is plugged in, we assume it is in this port
+     * 
+     * <p>WARNING: If using an Xbox controller and a joystick at the same time, 
+     * plug the Xbox controller in first</p>
+     */
+    public final static int XBOX_PORT = 0;
+
+    /**
+     * If a joystick is plugged in, we assume it is in this port
+     * 
+     * <p>WARNING: If using an Xbox controller and a joystick at the same time, 
+     * plug the joystick in second</p>
+     */
+    public final static int JOYSTICK_PORT = 1;
 } 
 
 
