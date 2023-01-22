@@ -43,7 +43,7 @@ public class VroomSubsystem implements Subsystem {
 
 
     /**
-     * {@link MecanumDriveKinematics} are one of the necessary prerequisite for {@link MecanumDriveOdometry}.
+     * {@link MecanumDriveKinematics} converts {@link ChassisSpeeds} to a {@link MecanumDriveWheelSpeeds}
      */
     private MecanumDriveKinematics kinematics;
 
@@ -60,6 +60,8 @@ public class VroomSubsystem implements Subsystem {
     private PIDController frontBackPidController;
     private PIDController leftRightPidController;
     private ProfiledPIDController profiledRotationPidContoller;
+    
+    private boolean isAutonomous;
     
     /**
      * The constructor initializes the vroom subsystem.
@@ -85,15 +87,18 @@ public class VroomSubsystem implements Subsystem {
                                                                  Constants.D_PROFILED_ROTATION, 
                                                                  new Constraints(Constants.MAXIMUM_VELOCITY_INCHES_PER_SECOND,
                                                                                  Constants.MAXIMUM_ACCELERATION_INCHES_PER_SECOND_SQUARED));
+        isAutonomous = false;
     }
 
     
-
+    public void setAutonomous(boolean a) {
+        isAutonomous = a;
+    } 
     /**
      * Resets the starting position of the robot to be (0, 0). Call this during the
      * beginning of a match right before autonomous, por favor.
      */
-    public void reset() 
+    public void reset() {
         // After reset, we assume the the current position on the felid is 0, 0.
         // TODO: Put in code to reset the encoders.
         gyro.reset();
