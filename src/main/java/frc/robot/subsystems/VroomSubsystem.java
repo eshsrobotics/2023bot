@@ -1,7 +1,5 @@
 package frc.robot.subsystems;
 
-import java.util.ResourceBundle.Control;
-
 import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -15,7 +13,6 @@ import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
 import edu.wpi.first.wpilibj.motorcontrol.PWMMotorController;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
-import edu.wpi.first.wpilibj2.command.PIDCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.Constants;
 
@@ -56,17 +53,19 @@ public class VroomSubsystem implements Subsystem {
      * Keeps track of the robot's rotation since the last call to {@link #reset()}.
      */
     private ADXRS450_Gyro gyro;
-
+    
     private PIDController frontBackPidController;
     private PIDController leftRightPidController;
     private ProfiledPIDController profiledRotationPidContoller;
     
     private boolean isAutonomous;
+
+    private InputSubsystem inputSubsystem;
     
     /**
      * The constructor initializes the vroom subsystem.
      */
-    public VroomSubsystem() {
+    public VroomSubsystem(InputSubsystem inputSubsystem) {
         backRight = new Spark(Constants.BACK_RIGHT_PWM_PORT);
         frontRight = new Spark(Constants.FRONT_RIGHT_PWM_PORT);
         backLeft = new Spark(Constants.BACK_LEFT_PWM_PORT);
@@ -88,6 +87,8 @@ public class VroomSubsystem implements Subsystem {
                                                                  new Constraints(Constants.MAXIMUM_VELOCITY_INCHES_PER_SECOND,
                                                                                  Constants.MAXIMUM_ACCELERATION_INCHES_PER_SECOND_SQUARED));
         isAutonomous = false;
+        
+        this.inputSubsystem = inputSubsystem;
     }
 
     
@@ -125,6 +126,14 @@ public class VroomSubsystem implements Subsystem {
         Subsystem.super.periodic();
         mecanumDriveOdometry.update(gyro.getRotation2d(), getEncodersDistanceMeters());
         
+        if (isAutonomous) {
+            // TODO: Max's code goes here
+        } else {
+            // Teleop runs here
+            drive.driveCartesian(inputSubsystem.getFrontBack(),
+                                 inputSubsystem.getRightLeft(),
+                                 inputSubsystem.getRotation());
+        }
     }
 
 }
