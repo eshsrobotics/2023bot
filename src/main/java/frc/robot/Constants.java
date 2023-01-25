@@ -84,13 +84,15 @@ public final class Constants {
 
     /**
      * Puts an acceleration constraint on the profiled rotation PID controller.
+     * TODO actually measure the maximum acceleration of the robot
      */
     public final static double MAXIMUM_ACCELERATION_INCHES_PER_SECOND_SQUARED = 10.0;
 
     /**
-     * Puts a velocity constraint on the profiled rotation PID controller. 
+     * Puts a velocity constraint on the profiled rotation PID controller.
+     * TODO actually measure the maximum speed of the robot 
      */
-    public final static double MAXIMUM_VELOCITY_INCHES_PER_SECOND = 10.0;
+    public final static double MAXIMUM_VELOCITY_INCHES_PER_SECOND = 48.0;
 
     /**
      * If an Xbox controller is plugged in, we assume it is in this port
@@ -113,7 +115,6 @@ public final class Constants {
      * Represents the trajectory file for autonomous.
      */
     public final static String AUTONOMOUS_JSON_PATH = "/home/lvuser/pathweaver.json";
-
 } 
 
 

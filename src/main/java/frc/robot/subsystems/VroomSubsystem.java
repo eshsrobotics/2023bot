@@ -1,15 +1,25 @@
 package frc.robot.subsystems;
 
+import java.io.IOException;
+import java.nio.file.Path;
+
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.MecanumDriveKinematics;
 import edu.wpi.first.math.kinematics.MecanumDriveOdometry;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelPositions;
+import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryUtil;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
 import edu.wpi.first.wpilibj.motorcontrol.PWMMotorController;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
@@ -75,6 +85,21 @@ public class VroomSubsystem implements Subsystem {
      * left-right, up-down, and rotation values
      */
     private InputSubsystem inputSubsystem;
+
+    /**
+     * Takes the robots pose at different moments along the autonomus path. 
+     */
+    private Trajectory trajectory; 
+
+    /**
+     * Represents the time in seconds when our autonomous trajectory started
+     */
+    private double trajectoryTimeSecondsStart;
+
+    /** 
+     * Represents the gyro angle at the start of autonomous
+     */
+    private Rotation2d orientationAtStart;
     
     /**
      * The constructor initializes the vroom subsystem.
@@ -106,11 +131,21 @@ public class VroomSubsystem implements Subsystem {
         isAutonomous = false;
         
         this.inputSubsystem = inputSubsystem;
+        try {
+            trajectory = TrajectoryUtil.fromPathweaverJson(Path.of(Constants.AUTONOMOUS_JSON_PATH));
+        } catch (IOException e) {
+            trajectory = null;
+            System.out.format("Caught IOException while opening '%s': %s\n", 
+                Constants.AUTONOMOUS_JSON_PATH,
+                e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     
     public void setAutonomous(boolean a) {
         isAutonomous = a;
+        trajectoryTimeSecondsStart = Timer.getFPGATimestamp();
     } 
     /**
      * Resets the starting position of the robot to be (0, 0). Call this during the
@@ -144,7 +179,25 @@ public class VroomSubsystem implements Subsystem {
         mecanumDriveOdometry.update(gyro.getRotation2d(), getEncodersDistanceMeters());
         
         if (isAutonomous) {
-            // TODO: Max's code goes here
+            // Autonomous runs HERE
+            // Checking that we have a trajectory loaded
+            double elapsedAutonTimeSeconds = Timer.getFPGATimestamp() - trajectoryTimeSecondsStart;
+            if (trajectory != null &&  elapsedAutonTimeSeconds <= trajectory.getTotalTimeSeconds()) {
+                // This Code assumes we never want to rotate the robot relative to the field during autonomous
+                Trajectory.State state = trajectory.sample(elapsedAutonTimeSeconds);
+                ChassisSpeeds cs = autonomousController.calculate(mecanumDriveOdometry.getPoseMeters(), 
+                                                                  state, 
+                                                                  orientationAtStart);
+                MecanumDriveWheelSpeeds mdws = kinematics.toWheelSpeeds(cs);
+                double flPower = MathUtil.clamp(mdws.frontLeftMetersPerSecond / Constants.MAXIMUM_VELOCITY_INCHES_PER_SECOND, -1.0, 1.0);
+                double frPower = MathUtil.clamp(mdws.frontRightMetersPerSecond / Constants.MAXIMUM_VELOCITY_INCHES_PER_SECOND, -1.0, 1.0);
+                double blPower = MathUtil.clamp(mdws.rearLeftMetersPerSecond / Constants.MAXIMUM_VELOCITY_INCHES_PER_SECOND, -1.0, 1.0);
+                double brPower = MathUtil.clamp(mdws.rearRightMetersPerSecond / Constants.MAXIMUM_VELOCITY_INCHES_PER_SECOND, -1.0, 1.0);
+                frontLeft.set(flPower);
+                frontRight.set(frPower);
+                backLeft.set(blPower);
+                backRight.set(brPower);
+            }
         } else {
             // Teleop runs here
             // Field-oriented mecanum
