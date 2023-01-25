@@ -58,6 +58,11 @@ public class VroomSubsystem implements Subsystem {
     private PIDController leftRightPidController;
     private ProfiledPIDController profiledRotationPidContoller;
     
+    /**
+     * {@link HolonomicDriveController} converts a trajectory into {@link ChassisSpeeds}
+     */
+    private HolonomicDriveController autonomousController;
+
     private boolean isAutonomous;
 
     private InputSubsystem inputSubsystem;
@@ -86,6 +91,9 @@ public class VroomSubsystem implements Subsystem {
                                                                  Constants.D_PROFILED_ROTATION, 
                                                                  new Constraints(Constants.MAXIMUM_VELOCITY_INCHES_PER_SECOND,
                                                                                  Constants.MAXIMUM_ACCELERATION_INCHES_PER_SECOND_SQUARED));
+        autonomousController = new HolonomicDriveController(leftRightPidController, 
+                                                            frontBackPidController, 
+                                                            profiledRotationPidContoller);
         isAutonomous = false;
         
         this.inputSubsystem = inputSubsystem;

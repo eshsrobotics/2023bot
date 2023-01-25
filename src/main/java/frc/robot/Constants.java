@@ -106,7 +106,14 @@ public final class Constants {
      * <p>WARNING: If using an Xbox controller and a joystick at the same time, 
      * plug the joystick in second</p>
      */
+
     public final static int JOYSTICK_PORT = 1;
+
+    /**
+     * Represents the trajectory file for autonomous.
+     */
+    public final static String AUTONOMOUS_JSON_PATH = "/home/lvuser/pathweaver.json";
+
 } 
 
 
