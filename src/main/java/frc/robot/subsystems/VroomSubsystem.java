@@ -63,8 +63,17 @@ public class VroomSubsystem implements Subsystem {
      */
     private HolonomicDriveController autonomousController;
 
+    /**
+     * Used to determine if the robot is currently in the autonomous phase of
+     * the game
+     */
     private boolean isAutonomous;
 
+    /**
+     * Used to get the values of the Xbox controller joysticks (left joystick
+     * up-down and left-right, and right joystick left-right) or the joystick
+     * left-right, up-down, and rotation values
+     */
     private InputSubsystem inputSubsystem;
     
     /**
