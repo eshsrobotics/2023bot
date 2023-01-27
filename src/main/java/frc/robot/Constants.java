@@ -95,6 +95,12 @@ public final class Constants {
     public final static double MAXIMUM_VELOCITY_INCHES_PER_SECOND = 48.0;
 
     /**
+     * Maximum velocity our robot can travel in meters.
+     * TODO actually measure the maximum speed of the robot 
+     */
+    public final static double MAXIMUM_VELOCITY_METERS_PER_SECOND = MAXIMUM_VELOCITY_INCHES_PER_SECOND/254;
+
+    /**
      * If an Xbox controller is plugged in, we assume it is in this port
      * 
      * <p>WARNING: If using an Xbox controller and a joystick at the same time, 

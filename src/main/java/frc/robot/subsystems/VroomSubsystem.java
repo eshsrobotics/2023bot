@@ -189,10 +189,10 @@ public class VroomSubsystem implements Subsystem {
                                                                   state, 
                                                                   orientationAtStart);
                 MecanumDriveWheelSpeeds mdws = kinematics.toWheelSpeeds(cs);
-                double flPower = MathUtil.clamp(mdws.frontLeftMetersPerSecond / Constants.MAXIMUM_VELOCITY_INCHES_PER_SECOND, -1.0, 1.0);
-                double frPower = MathUtil.clamp(mdws.frontRightMetersPerSecond / Constants.MAXIMUM_VELOCITY_INCHES_PER_SECOND, -1.0, 1.0);
-                double blPower = MathUtil.clamp(mdws.rearLeftMetersPerSecond / Constants.MAXIMUM_VELOCITY_INCHES_PER_SECOND, -1.0, 1.0);
-                double brPower = MathUtil.clamp(mdws.rearRightMetersPerSecond / Constants.MAXIMUM_VELOCITY_INCHES_PER_SECOND, -1.0, 1.0);
+                double flPower = MathUtil.clamp(mdws.frontLeftMetersPerSecond / Constants.MAXIMUM_VELOCITY_METERS_PER_SECOND, -1.0, 1.0);
+                double frPower = MathUtil.clamp(mdws.frontRightMetersPerSecond / Constants.MAXIMUM_VELOCITY_METERS_PER_SECOND, -1.0, 1.0);
+                double blPower = MathUtil.clamp(mdws.rearLeftMetersPerSecond / Constants.MAXIMUM_VELOCITY_METERS_PER_SECOND, -1.0, 1.0);
+                double brPower = MathUtil.clamp(mdws.rearRightMetersPerSecond / Constants.MAXIMUM_VELOCITY_METERS_PER_SECOND, -1.0, 1.0);
                 frontLeft.set(flPower);
                 frontRight.set(frPower);
                 backLeft.set(blPower);
