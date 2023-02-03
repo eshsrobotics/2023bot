@@ -121,6 +121,11 @@ public final class Constants {
      * Represents the trajectory file for autonomous.
      */
     public final static String AUTONOMOUS_JSON_PATH = "/home/lvuser/pathweaver.json";
+
+    /**
+     * 
+     */
+    public final static double DEADZONE = 0.005;
 } 
 
 

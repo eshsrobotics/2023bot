@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.InputSubsystem;
+import frc.robot.subsystems.TestBedSubsystem;
 import frc.robot.subsystems.VroomSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 
@@ -26,6 +27,7 @@ public class RobotContainer {
 
   private VroomSubsystem driveSubsystem;
   private InputSubsystem inputSubsystem;
+  private TestBedSubsystem testBedSubsystem;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -33,6 +35,7 @@ public class RobotContainer {
     configureButtonBindings();
     inputSubsystem = new InputSubsystem();
     driveSubsystem  = new VroomSubsystem(inputSubsystem);
+    testBedSubsystem = new TestBedSubsystem(inputSubsystem);
   }
 
   /**

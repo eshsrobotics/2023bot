@@ -66,6 +66,16 @@ public class InputSubsystem extends SubsystemBase {
         frontBack = MathUtil.clamp(xboxFrontBack + joystickFrontBack, -1, 1);
         leftRight = MathUtil.clamp(xboxLeftRight + joystickLeftRight, -1, 1);
         rotation = MathUtil.clamp(xboxRotation + joystickRotation, -1, 1);
+
+        if (frontBack <= Constants.DEADZONE || frontBack >= -Constants.DEADZONE) {
+            frontBack = 0.0;
+        }
+        if (leftRight <= Constants.DEADZONE || leftRight >= -Constants.DEADZONE) {
+            leftRight = 0.0;
+        }
+        if (rotation <= Constants.DEADZONE || rotation >= -Constants.DEADZONE) {
+            rotation = 0.0;
+        }
     }
 
     /**
