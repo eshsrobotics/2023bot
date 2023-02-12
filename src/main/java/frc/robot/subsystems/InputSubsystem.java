@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.ShuffleboardDebug;
 
 /** 
  * Abstracts user input to three different values for, the front-back value, the
@@ -22,11 +23,13 @@ public class InputSubsystem extends SubsystemBase {
      */
     private Joystick joystickController = null;
 
+    private ShuffleboardDebug debug;
+
     private double frontBack;
     private double leftRight;
     private double rotation;
 
-    public InputSubsystem() {
+    public InputSubsystem(ShuffleboardDebug debug) {
         try {
             xboxController = new XboxController(Constants.XBOX_PORT); 
         } catch(Exception e) {
@@ -38,6 +41,8 @@ public class InputSubsystem extends SubsystemBase {
         } catch(Exception e) {
             System.out.format("Exception caught while initializing input subsystem: %s\n", e.getMessage());
         }
+
+        this.debug = debug;
     }
 
     @Override
@@ -60,6 +65,8 @@ public class InputSubsystem extends SubsystemBase {
             joystickFrontBack = joystickController.getY();
             joystickLeftRight = joystickController.getX();
             joystickRotation = joystickController.getZ();
+            debug.zAxis.setDouble(joystickController.getZ());
+            debug.yAxis.setDouble(joystickController.getY());
         }
 
         // Intelligently combine simultaneous inputs
@@ -67,13 +74,13 @@ public class InputSubsystem extends SubsystemBase {
         leftRight = MathUtil.clamp(xboxLeftRight + joystickLeftRight, -1, 1);
         rotation = MathUtil.clamp(xboxRotation + joystickRotation, -1, 1);
 
-        if (frontBack <= Constants.DEADZONE || frontBack >= -Constants.DEADZONE) {
+        if (Math.abs(frontBack) <= Constants.DEADZONE) {
             frontBack = 0.0;
         }
-        if (leftRight <= Constants.DEADZONE || leftRight >= -Constants.DEADZONE) {
+        if (Math.abs(leftRight) <= Constants.DEADZONE) {
             leftRight = 0.0;
         }
-        if (rotation <= Constants.DEADZONE || rotation >= -Constants.DEADZONE) {
+        if (Math.abs(rotation) <= Constants.DEADZONE) {
             rotation = 0.0;
         }
     }
@@ -97,5 +104,13 @@ public class InputSubsystem extends SubsystemBase {
      */
     public double getRotation() {
         return rotation;
+    }
+
+    public boolean getA() {
+        return xboxController.getAButton();
+    }
+
+    public boolean getB() {
+        return xboxController.getBButton();
     }
 }

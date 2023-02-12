@@ -4,8 +4,12 @@
 
 package frc.robot;
 
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.InputSubsystem;
@@ -28,14 +32,16 @@ public class RobotContainer {
   private VroomSubsystem driveSubsystem;
   private InputSubsystem inputSubsystem;
   private TestBedSubsystem testBedSubsystem;
+  private ShuffleboardDebug debug;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the button bindings
     configureButtonBindings();
-    inputSubsystem = new InputSubsystem();
-    driveSubsystem  = new VroomSubsystem(inputSubsystem);
-    testBedSubsystem = new TestBedSubsystem(inputSubsystem);
+    debug = new ShuffleboardDebug();
+    inputSubsystem = new InputSubsystem(debug);
+    // driveSubsystem  = new VroomSubsystem(inputSubsystem);
+    testBedSubsystem = new TestBedSubsystem(inputSubsystem, debug);
   }
 
   /**
@@ -57,10 +63,14 @@ public class RobotContainer {
   }
 
   public void enableAutonomous() {
-    driveSubsystem.setAutonomous(true);
+    if (driveSubsystem != null) {
+      driveSubsystem.setAutonomous(true);
+    }
   }
   
   public void disableAutonomous() {
-    driveSubsystem.setAutonomous(false);
+    if (driveSubsystem != null) {
+      driveSubsystem.setAutonomous(false);
+    }
   }
 }

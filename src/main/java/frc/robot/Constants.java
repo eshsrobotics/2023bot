@@ -125,7 +125,7 @@ public final class Constants {
     /**
      * 
      */
-    public final static double DEADZONE = 0.005;
+    public final static double DEADZONE = 0.1;
 } 
 
 
