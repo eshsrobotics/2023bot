@@ -121,6 +121,23 @@ public final class Constants {
      * Represents the trajectory file for autonomous.
      */
     public final static String AUTONOMOUS_JSON_PATH = "/home/lvuser/pathweaver.json";
+
+    // TODO: Find actual values for the lengths of the arm segn
+    /**
+     * The distance (in inches) from the shoulder joint of the arm to the elbow
+     * joint
+     */
+    public final static double SHOULDER_TO_ELBOW_INCHES = 10;
+
+    /**
+     * The distance (in inches) from the elbow joint of the arm to the wrist
+     */
+    public final static double ELBOW_TO_WRIST_INCHES = 10;
+
+    /**
+     * Used to convert radian values of arm angles to degrees
+     */
+    public final static double RADIANS_TO_DEGREES = 180 / Math.PI;    
 } 
 
 
