@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.motorcontrol.MotorController;
+import com.revrobotics.CANSparkMax;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.ShuffleboardDebug;
@@ -30,19 +31,19 @@ public class ArmSubsystem extends SubsystemBase {
      * This variable, elbowMotor, and wristMotor are all nullable (It is fine
      * for any of these three variables to be null)
      */
-    private MotorController shoulderMotor;
+    private CANSparkMax shoulderMotor;
 
     /**
      * This is the elbow motor of the robot, the motor that is in between the
      * shoulder and wrist
      */
-    private MotorController elbowMotor;
+    private CANSparkMax elbowMotor;
 
     /**
      * This is the wrist motor of the robot, the motor that is connected to the
      * hand of the robot to keep it facing straight down
      */
-    private MotorController wristMotor;
+    private CANSparkMax wristMotor;
 
     /**
      * The variable for the angle the shoulder motor should move to based on x
