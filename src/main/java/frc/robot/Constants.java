@@ -138,6 +138,28 @@ public final class Constants {
      * Used to convert radian values of arm angles to degrees
      */
     public final static double RADIANS_TO_DEGREES = 180 / Math.PI;    
+
+    // TODO: Find actual kP, kI, and kD values for the shoulder, elbow, and
+    // wrist
+    /**
+     * kP, kI, and kD are used for PID for the arm
+     */
+    public final static double SHOULDER_kP = 10.0;
+    public final static double SHOULDER_kI = 10.0;
+    public final static double SHOULDER_kD = 10.0;
+
+    public final static double ELBOW_kP = 10.0;
+    public final static double ELBOW_kI = 10.0;
+    public final static double ELBOW_kD = 10.0;
+
+    public final static double WRIST_kP = 10.0;
+    public final static double WRIST_kI = 10.0;
+    public final static double WRIST_kD = 10.0;
+
+    /**
+     * The conversion factor from CANSparkMax to angles
+     */
+    public final static double CAN_TO_ANGLE = 5.0;
 } 
 
 
