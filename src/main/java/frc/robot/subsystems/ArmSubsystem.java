@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.ShuffleboardDebug;
@@ -63,6 +64,27 @@ public class ArmSubsystem extends SubsystemBase {
      */
     private double wristAngleDegrees;
 
+    /**
+     * The PID controller for the motor that moves the shoulder of the arm
+     * 
+     * Used to move the motor more accurately
+     */
+    private PIDController shoulderPID;
+
+    /**
+     * The PID controller for the motor that moves the elbow of the arm
+     * 
+     * Used to move the motor more accurately
+     */
+    private PIDController elbowPID;
+
+    /**
+     * The PID controller for the motor that moves the wrist of the arm
+     * 
+     * Used to move the motor more accurately
+     */
+    private PIDController wristPID;
+
     private ShuffleboardDebug debug;
 
     /**
@@ -83,6 +105,10 @@ public class ArmSubsystem extends SubsystemBase {
         shoulderMotor = null;
         elbowMotor = null;
         wristMotor = null;
+
+        shoulderPID = new PIDController(Constants.SHOULDER_kP, Constants.SHOULDER_kI, Constants.SHOULDER_kD);
+        elbowPID = new PIDController(Constants.ELBOW_kP, Constants.ELBOW_kI, Constants.ELBOW_kD);
+        wristPID = new PIDController(Constants.WRIST_kP, Constants.WRIST_kI, Constants.WRIST_kD);
     }
 
     @Override
