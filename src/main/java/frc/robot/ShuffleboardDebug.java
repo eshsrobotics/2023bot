@@ -14,6 +14,10 @@ public class ShuffleboardDebug {
     public GenericEntry elbowAngle;
     public GenericEntry wristAngle;
 
+    public GenericEntry forwardBack;
+    public GenericEntry leftRight;
+    public GenericEntry rotation; 
+
     public ShuffleboardDebug() {
         var foo = Shuffleboard.getTab("Arm");
         var layout = foo.getLayout("bar", BuiltInLayouts.kGrid)
@@ -33,6 +37,16 @@ public class ShuffleboardDebug {
             .withPosition(4, 0)
             .withSize(2, 2)
             .withWidget(BuiltInWidgets.kGyro)
+            .getEntry();
+
+        var inputTab = Shuffleboard.getTab("Input");
+        var inputLayout = inputTab.getLayout("Input", BuiltInLayouts.kGrid)
+            .withSize(4, 6);
+        forwardBack = inputLayout.add("frontBack", 0)
+            .getEntry();
+        leftRight = inputLayout.add("leftRight", 0)
+            .getEntry();
+        rotation = inputLayout.add("rotation", 0)
             .getEntry();
     }
 }

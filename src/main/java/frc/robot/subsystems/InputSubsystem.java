@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.ShuffleboardDebug;
 
 /** 
  * Abstracts user input to three different values for, the front-back value, the
@@ -25,8 +26,9 @@ public class InputSubsystem extends SubsystemBase {
     private double frontBack;
     private double leftRight;
     private double rotation;
+    private ShuffleboardDebug debug;
 
-    public InputSubsystem() {
+    public InputSubsystem(ShuffleboardDebug debug) {
         try {
             xboxController = new XboxController(Constants.XBOX_PORT); 
         } catch(Exception e) {
@@ -38,6 +40,8 @@ public class InputSubsystem extends SubsystemBase {
         } catch(Exception e) {
             System.out.format("Exception caught while initializing input subsystem: %s\n", e.getMessage());
         }
+
+        this.debug = debug;
     }
 
     @Override
@@ -66,6 +70,10 @@ public class InputSubsystem extends SubsystemBase {
         frontBack = MathUtil.clamp(xboxFrontBack + joystickFrontBack, -1, 1);
         leftRight = MathUtil.clamp(xboxLeftRight + joystickLeftRight, -1, 1);
         rotation = MathUtil.clamp(xboxRotation + joystickRotation, -1, 1);
+
+        debug.forwardBack.setDouble(frontBack);
+        debug.leftRight.setDouble(leftRight);
+        debug.rotation.setDouble(rotation);
     }
 
     /**

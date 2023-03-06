@@ -26,13 +26,16 @@ public class RobotContainer {
 
   private VroomSubsystem driveSubsystem;
   private InputSubsystem inputSubsystem;
+  private ShuffleboardDebug shuffleboardDebug;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the button bindings
     configureButtonBindings();
-    inputSubsystem = new InputSubsystem();
+    shuffleboardDebug = new ShuffleboardDebug();
+    inputSubsystem = new InputSubsystem(shuffleboardDebug);
     driveSubsystem  = new VroomSubsystem(inputSubsystem);
+  
   }
 
   /**
