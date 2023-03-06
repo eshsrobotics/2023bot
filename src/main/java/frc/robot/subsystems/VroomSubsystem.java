@@ -3,6 +3,9 @@ package frc.robot.subsystems;
 import java.io.IOException;
 import java.nio.file.Path;
 
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.controller.PIDController;
@@ -21,8 +24,6 @@ import edu.wpi.first.math.trajectory.TrajectoryUtil;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
-import edu.wpi.first.wpilibj.motorcontrol.PWMMotorController;
-import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.Constants;
 
@@ -33,10 +34,10 @@ import frc.robot.Constants;
  */
 public class VroomSubsystem implements Subsystem {
 
-    private PWMMotorController backRight;
-    private PWMMotorController backLeft;
-    private PWMMotorController frontRight;
-    private PWMMotorController frontLeft;
+    private CANSparkMax backRight;
+    private CANSparkMax backLeft;
+    private CANSparkMax frontRight;
+    private CANSparkMax frontLeft;
 
     /**
      * In order to make a drive with four Mecanum wheels go _vroom_, you need to apply the
@@ -105,10 +106,10 @@ public class VroomSubsystem implements Subsystem {
      * The constructor initializes the vroom subsystem.
      */
     public VroomSubsystem(InputSubsystem inputSubsystem) {
-        backRight = new Spark(Constants.BACK_RIGHT_PWM_PORT);
-        frontRight = new Spark(Constants.FRONT_RIGHT_PWM_PORT);
-        backLeft = new Spark(Constants.BACK_LEFT_PWM_PORT);
-        frontLeft = new Spark(Constants.FRONT_LEFT_PWM_PORT);
+        backRight = new CANSparkMax(Constants.BACK_RIGHT_CAN_ID, MotorType.kBrushed);
+        frontRight = new CANSparkMax(Constants.FRONT_RIGHT_CAN_ID, MotorType.kBrushed);
+        backLeft = new CANSparkMax(Constants.BACK_LEFT_CAN_ID, MotorType.kBrushed);
+        frontLeft = new CANSparkMax(Constants.FRONT_LEFT_CAN_ID, MotorType.kBrushed);
         drive = new MecanumDrive(frontLeft, backLeft, frontRight, backRight);
         kinematics = new MecanumDriveKinematics(new Translation2d(-Constants.CHASSIS_WIDTH_INCHES / 2, Constants.CHASSIS_LENGTH_INCHES / 2),
                                                 new Translation2d(Constants.CHASSIS_WIDTH_INCHES / 2, Constants.CHASSIS_LENGTH_INCHES / 2),
