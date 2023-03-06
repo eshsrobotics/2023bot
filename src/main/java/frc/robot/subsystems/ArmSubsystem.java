@@ -113,10 +113,15 @@ public class ArmSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        // TODO Auto-generated method stub
+        calculateArmAngles();
         super.periodic();
     }
 
+    /**
+     * This function uses a series of formulas to take an X and Y goal position in space, 
+     *  and tells the robot the correct angles for each of the motors to turn to. (Math 
+     *  may be wrong, must fix) 
+     */
     private void calculateArmAngles() {
         final double L1 = Constants.SHOULDER_TO_ELBOW_INCHES;
         final double L2 = Constants.ELBOW_TO_WRIST_INCHES;
@@ -129,9 +134,17 @@ public class ArmSubsystem extends SubsystemBase {
         shoulderAngleDegrees = (alpha * Constants.RADIANS_TO_DEGREES) + (theta * Constants.RADIANS_TO_DEGREES);
         elbowAngleDegrees = gamma * Constants.RADIANS_TO_DEGREES;
         wristAngleDegrees = (beta * Constants.RADIANS_TO_DEGREES) + (fi * Constants.RADIANS_TO_DEGREES);
-        debug.shoulderAngle.setDouble(shoulderAngleDegrees);
-        debug.elbowAngle.setDouble(elbowAngleDegrees);
-        debug.wristAngle.setDouble(wristAngleDegrees);
+        
+        
+        if (debug.overrideAngles.getBoolean(false)) {
+            shoulderAngleDegrees = debug.shoulderAngle.getDouble(0);
+            elbowAngleDegrees = debug.elbowAngle.getDouble(0);
+            wristAngleDegrees = debug.wristAngle.getDouble(0);
+        } else {
+            debug.shoulderAngle.setDouble(shoulderAngleDegrees);
+            debug.elbowAngle.setDouble(elbowAngleDegrees);
+            debug.wristAngle.setDouble(wristAngleDegrees);
+        }
     }
 
     /**

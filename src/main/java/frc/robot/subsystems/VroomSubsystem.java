@@ -67,7 +67,7 @@ public class VroomSubsystem implements Subsystem {
     
     private PIDController frontBackPidController;
     private PIDController leftRightPidController;
-    private ProfiledPIDController profiledRotationPidContoller;
+    private ProfiledPIDController profiledRotationPidController;
     
     /**
      * {@link HolonomicDriveController} converts a trajectory into {@link ChassisSpeeds}
@@ -121,14 +121,14 @@ public class VroomSubsystem implements Subsystem {
         mecanumDriveOdometry = new MecanumDriveOdometry(kinematics, gyro.getRotation2d(), getEncodersDistanceMeters());
         frontBackPidController = new PIDController(Constants.P_FRONT_BACK, Constants.I_FRONT_BACK, Constants.D_FRONT_BACK);
         leftRightPidController = new PIDController(Constants.P_LEFT_RIGHT, Constants.I_LEFT_RIGHT, Constants.D_LEFT_RIGHT);
-        profiledRotationPidContoller = new ProfiledPIDController(Constants.P_PROFILED_ROTATION,
+        profiledRotationPidController = new ProfiledPIDController(Constants.P_PROFILED_ROTATION,
                                                                  Constants.I_PROFILED_ROTATION,
                                                                  Constants.D_PROFILED_ROTATION, 
                                                                  new Constraints(Constants.MAXIMUM_VELOCITY_INCHES_PER_SECOND,
                                                                                  Constants.MAXIMUM_ACCELERATION_INCHES_PER_SECOND_SQUARED));
         autonomousController = new HolonomicDriveController(leftRightPidController, 
                                                             frontBackPidController, 
-                                                            profiledRotationPidContoller);
+                                                            profiledRotationPidController);
         isAutonomous = false;
         
         this.inputSubsystem = inputSubsystem;

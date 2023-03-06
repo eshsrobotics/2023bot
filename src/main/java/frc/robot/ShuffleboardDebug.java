@@ -1,5 +1,7 @@
 package frc.robot;
 
+import java.util.Map;
+
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
@@ -13,14 +15,18 @@ public class ShuffleboardDebug {
     public GenericEntry shoulderAngle;
     public GenericEntry elbowAngle;
     public GenericEntry wristAngle;
+    public GenericEntry x;
+    public GenericEntry y;
+    public GenericEntry overrideAngles;
 
     public GenericEntry forwardBack;
     public GenericEntry leftRight;
     public GenericEntry rotation; 
+    private Map<GenericEntry, GenericEntry> entriesChanged;
 
     public ShuffleboardDebug() {
-        var foo = Shuffleboard.getTab("Arm");
-        var layout = foo.getLayout("bar", BuiltInLayouts.kGrid)
+        var armTab = Shuffleboard.getTab("Arm");
+        var layout = armTab.getLayout("bar", BuiltInLayouts.kGrid)
             .withPosition(4, 0)
             .withSize(4, 6);
         shoulderAngle = layout.add("Shoulder angle", 0)
@@ -37,6 +43,21 @@ public class ShuffleboardDebug {
             .withPosition(4, 0)
             .withSize(2, 2)
             .withWidget(BuiltInWidgets.kGyro)
+            .getEntry();
+        x = layout.add("X", 0)
+            .withPosition(2, 2)
+            .withSize(2, 2)
+            .withWidget(BuiltInWidgets.kNumberSlider)
+            .getEntry();
+        y = layout.add("Y", 0)
+            .withPosition(4, 2)
+            .withSize(2, 2)
+            .withWidget(BuiltInWidgets.kNumberSlider)
+            .getEntry();
+        overrideAngles = layout.add("True = Override", 0)
+            .withPosition(6, 0)
+            .withSize(2, 2)
+            .withWidget(BuiltInWidgets.kBooleanBox)
             .getEntry();
 
         var inputTab = Shuffleboard.getTab("Input");
