@@ -68,9 +68,9 @@ public class InputSubsystem extends SubsystemBase {
         }
 
         // Intelligently combine simultaneous inputs
-        frontBack = MathUtil.clamp(xboxFrontBack + joystickFrontBack, -1, 1);
+        frontBack = MathUtil.clamp(xboxRotation + joystickFrontBack, -1, 1);
         leftRight = MathUtil.clamp(xboxLeftRight + joystickLeftRight, -1, 1);
-        rotation = MathUtil.clamp(xboxRotation + joystickRotation, -1, 1);
+        rotation = MathUtil.clamp(xboxFrontBack + joystickRotation, -1, 1);
 
         debug.forwardBack.setDouble(frontBack);
         debug.leftRight.setDouble(leftRight);
