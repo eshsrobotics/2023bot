@@ -19,6 +19,11 @@ public class ShuffleboardDebug {
     public GenericEntry y;
     public GenericEntry overrideAngles;
 
+    public GenericEntry frontLeft;
+    public GenericEntry frontRight;
+    public GenericEntry backLeft;
+    public GenericEntry backRight;
+
     public GenericEntry forwardBack;
     public GenericEntry leftRight;
     public GenericEntry rotation; 
@@ -27,34 +32,34 @@ public class ShuffleboardDebug {
     public ShuffleboardDebug() {
         var armTab = Shuffleboard.getTab("Arm");
         var layout = armTab.getLayout("bar", BuiltInLayouts.kGrid)
-            .withPosition(4, 0)
-            .withSize(4, 6);
-        shoulderAngle = layout.add("Shoulder angle", 0)
+            .withPosition(0, 0)
+            .withSize(1, 1);
+        shoulderAngle = armTab.add("Shoulder angle", 0)
             .withPosition(0, 0)
             .withSize(2, 2)
             .withWidget(BuiltInWidgets.kGyro)
             .getEntry();
-        elbowAngle = layout.add("Elbow angle", 0)
+        elbowAngle = armTab.add("Elbow angle", 0)
             .withPosition(2, 0)
             .withSize(2, 2)
             .withWidget(BuiltInWidgets.kGyro)
             .getEntry();
-        wristAngle = layout.add("Wrist angle", 0)
+        wristAngle = armTab.add("Wrist angle", 0)
             .withPosition(4, 0)
             .withSize(2, 2)
             .withWidget(BuiltInWidgets.kGyro)
             .getEntry();
-        x = layout.add("X", 0)
+        x = armTab.add("X", 0)
             .withPosition(2, 2)
             .withSize(2, 2)
             .withWidget(BuiltInWidgets.kNumberSlider)
             .getEntry();
-        y = layout.add("Y", 0)
+        y = armTab.add("Y", 0)
             .withPosition(4, 2)
             .withSize(2, 2)
             .withWidget(BuiltInWidgets.kNumberSlider)
             .getEntry();
-        overrideAngles = layout.add("True = Override", 0)
+        overrideAngles = armTab.add("True = Override", 0)
             .withPosition(6, 0)
             .withSize(2, 2)
             .withWidget(BuiltInWidgets.kBooleanBox)
@@ -63,11 +68,35 @@ public class ShuffleboardDebug {
         var inputTab = Shuffleboard.getTab("Input");
         var inputLayout = inputTab.getLayout("Input", BuiltInLayouts.kGrid)
             .withSize(4, 6);
-        forwardBack = inputLayout.add("frontBack", 0)
+        forwardBack = inputTab.add("frontBack", 0)
             .getEntry();
-        leftRight = inputLayout.add("leftRight", 0)
+        leftRight = inputTab.add("leftRight", 0)
             .getEntry();
-        rotation = inputLayout.add("rotation", 0)
+        rotation = inputTab.add("rotation", 0)
+            .getEntry();
+        
+        var vroomTab = Shuffleboard.getTab("Vroom");
+        var vroomLayout = vroomTab.getLayout("Vroom", BuiltInLayouts.kGrid)
+            .withSize(4, 6);
+        frontLeft = vroomTab.add("Front Left", 0)
+            .withPosition(0, 0)
+            .withSize(2, 2)
+            .withWidget(BuiltInWidgets.kDial)
+            .getEntry();
+        frontRight = vroomTab.add("Front Right", 0)
+            .withPosition(2, 0)
+            .withSize(2, 2)
+            .withWidget(BuiltInWidgets.kDial)
+            .getEntry();
+        backLeft = vroomTab.add("Back Left", 0)
+            .withPosition(4, 0)
+            .withSize(2, 2)
+            .withWidget(BuiltInWidgets.kDial)
+            .getEntry();
+        backRight = vroomTab.add("Back Right", 0)
+            .withPosition(6, 0)
+            .withSize(2, 2)
+            .withWidget(BuiltInWidgets.kDial)
             .getEntry();
     }
 }

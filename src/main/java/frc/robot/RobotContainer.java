@@ -34,7 +34,7 @@ public class RobotContainer {
     configureButtonBindings();
     shuffleboardDebug = new ShuffleboardDebug();
     inputSubsystem = new InputSubsystem(shuffleboardDebug);
-    driveSubsystem  = new VroomSubsystem(inputSubsystem);
+    driveSubsystem  = new VroomSubsystem(inputSubsystem, shuffleboardDebug);
   
   }
 

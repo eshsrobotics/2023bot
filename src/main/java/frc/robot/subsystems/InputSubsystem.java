@@ -46,6 +46,7 @@ public class InputSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
+        
         super.periodic();
         double xboxFrontBack = 0.0;
         double xboxLeftRight = 0.0;

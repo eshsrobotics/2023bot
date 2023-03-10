@@ -18,21 +18,23 @@ import edu.wpi.first.math.kinematics.MecanumDriveKinematics;
 import edu.wpi.first.math.kinematics.MecanumDriveOdometry;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelPositions;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryUtil;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.ShuffleboardDebug;
 
 /**
  * This subsystem controls the drive motors for our robot's West Coast drive. We
  * use two motor groups -- left and right -- to control sets of motors that are
  * connected to a planetary gearbox on each side.
  */
-public class VroomSubsystem implements Subsystem {
+public class VroomSubsystem extends SubsystemBase {
 
     private CANSparkMax backRight;
     private CANSparkMax backLeft;
@@ -102,10 +104,12 @@ public class VroomSubsystem implements Subsystem {
      */
     private Rotation2d orientationAtStart;
     
+    private ShuffleboardDebug debug;
+
     /**
      * The constructor initializes the vroom subsystem.
      */
-    public VroomSubsystem(InputSubsystem inputSubsystem) {
+    public VroomSubsystem(InputSubsystem inputSubsystem, ShuffleboardDebug debug) {
         backRight = new CANSparkMax(Constants.BACK_RIGHT_CAN_ID, MotorType.kBrushed);
         frontRight = new CANSparkMax(Constants.FRONT_RIGHT_CAN_ID, MotorType.kBrushed);
         backLeft = new CANSparkMax(Constants.BACK_LEFT_CAN_ID, MotorType.kBrushed);
@@ -132,6 +136,11 @@ public class VroomSubsystem implements Subsystem {
         isAutonomous = false;
         
         this.inputSubsystem = inputSubsystem;
+
+        this.debug = debug;
+
+        drive.setSafetyEnabled(false);
+
         try {
             trajectory = TrajectoryUtil.fromPathweaverJson(Path.of(Constants.AUTONOMOUS_JSON_PATH));
         } catch (IOException e) {
@@ -175,10 +184,10 @@ public class VroomSubsystem implements Subsystem {
 
     @Override
     public void periodic() {
-        // TODO Auto-generated method stub
-        Subsystem.super.periodic();
+        // TODO Auto-generated method stubs
+        super.periodic();
         mecanumDriveOdometry.update(gyro.getRotation2d(), getEncodersDistanceMeters());
-        
+        System.out.println("periodic activated");
         if (isAutonomous) {
             // Autonomous runs HERE
             // Checking that we have a trajectory loaded
@@ -202,12 +211,24 @@ public class VroomSubsystem implements Subsystem {
         } else {
             // Teleop runs here
             // Field-oriented mecanum
+            
+
             drive.driveCartesian(inputSubsystem.getFrontBack(),
                                  inputSubsystem.getLeftRight(),
-                                 inputSubsystem.getRotation(),
-                                 gyro.getRotation2d());
+                                 inputSubsystem.getRotation());
+
+            var wheelSpeeds = MecanumDrive.driveCartesianIK(inputSubsystem.getFrontBack(),
+                                 inputSubsystem.getLeftRight(),
+                                 inputSubsystem.getRotation());
+            
+            debug.frontLeft.setDouble(wheelSpeeds.frontLeft);
+            debug.frontRight.setDouble(wheelSpeeds.frontRight);
+            debug.backLeft.setDouble(wheelSpeeds.rearLeft);
+            debug.backRight.setDouble(wheelSpeeds.rearRight);
+            
+            drive.setExpiration(.1);
+            drive.feed();
         }
     }
-
 }
    
