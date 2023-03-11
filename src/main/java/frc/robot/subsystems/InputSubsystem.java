@@ -51,6 +51,7 @@ public class InputSubsystem extends SubsystemBase {
         double xboxFrontBack = 0.0;
         double xboxLeftRight = 0.0;
         double xboxRotation = 0.0;
+        
         double joystickFrontBack = 0.0;
         double joystickLeftRight = 0.0;
         double joystickRotation = 0.0;
@@ -71,6 +72,17 @@ public class InputSubsystem extends SubsystemBase {
         frontBack = MathUtil.clamp(xboxRotation + joystickFrontBack, -1, 1);
         leftRight = MathUtil.clamp(xboxLeftRight + joystickLeftRight, -1, 1);
         rotation = MathUtil.clamp(xboxFrontBack + joystickRotation, -1, 1);
+
+        // Adds a deadzone to the controller of 0.1, or 10%
+        if (Math.abs(frontBack) < 0.1) {
+            frontBack = 0.0;
+        }
+        if (Math.abs(leftRight) < 0.1){
+            leftRight = 0.0;
+        }
+        if (Math.abs(rotation) < 0.1) {
+            rotation = 0.0;
+        }
 
         debug.forwardBack.setDouble(frontBack);
         debug.leftRight.setDouble(leftRight);

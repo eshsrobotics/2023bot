@@ -118,7 +118,7 @@ public final class Constants {
      */
     public final static String AUTONOMOUS_JSON_PATH = "/home/lvuser/pathweaver.json";
 
-    // TODO: Find actual values for the lengths of the arm segn
+    // TODO: Find actual values for the lengths of the arm segments
     /**
      * The distance (in inches) from the shoulder joint of the arm to the elbow
      * joint
@@ -156,6 +156,39 @@ public final class Constants {
      * The conversion factor from CANSparkMax to angles
      */
     public final static double CAN_TO_ANGLE = 5.0;
+
+    // TODO: Find actual CAN IDs for the arm motors
+    /**
+     * The CAN IDs for the arm motors
+     */
+    public final static int SHOULDER_MOTOR_CAN_ID = 0;
+    public final static int ELBOW_MOTOR_CAN_ID = 0;
+    public final static int WRIST_MOTOR_CAN_ID = 0;
+
+    // TODO: Find actual starting angles
+    /**
+     * The expected starting angles for the arm motors
+     */
+    public final static double SHOULDER_START_ANGLE = 0;
+    public final static double ELBOW_START_ANGLE = 0;
+    public final static double WRIST_START_ANGLE = 0;
+
+    /**
+     * The gear ratios for the shoulder, elbow, and wrist motors
+     */
+    public final static double SHOULDER_GEAR_RATIO = 26 / 50;
+    public final static double ELBOW_GEAR_RATIO = 32 / 56;
+    // TODO: Get actual wrist gear ratio
+    public final static double WRIST_GEAR_RATIO = 1;
+
+    // TODO: Find actual conversion factors
+    /**
+     * The conversion factors for the unexpected changes in input to output
+     * rotations of the arm motors
+     */
+    public final static double SHOULDER_CONVERSION = 1;
+    public final static double ELBOW_CONVERSION = 1;
+    public final static double WRIST_CONVERSION = 1;
 } 
 
 

@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -65,6 +66,13 @@ public class ArmSubsystem extends SubsystemBase {
     private double wristAngleDegrees;
 
     /**
+     * The variables for the current positions of the motors
+     */
+    private double shoulderCurrentDegrees;
+    private double elbowCurrentDegrees;
+    private double wristCurrentDegrees;
+
+    /**
      * The PID controller for the motor that moves the shoulder of the arm
      * 
      * Used to move the motor more accurately
@@ -101,10 +109,13 @@ public class ArmSubsystem extends SubsystemBase {
 
         this.debug = debug;
 
-        // TODO: Fill in actual motors
-        shoulderMotor = null;
-        elbowMotor = null;
-        wristMotor = null;
+        shoulderAngleDegrees = Constants.SHOULDER_START_ANGLE;
+        elbowAngleDegrees = Constants.ELBOW_START_ANGLE;
+        wristAngleDegrees = Constants.WRIST_START_ANGLE;
+
+        shoulderMotor = new CANSparkMax(Constants.SHOULDER_MOTOR_CAN_ID, MotorType.kBrushed);
+        elbowMotor = new CANSparkMax(Constants.ELBOW_MOTOR_CAN_ID, MotorType.kBrushed);
+        wristMotor = new CANSparkMax(Constants.WRIST_MOTOR_CAN_ID, MotorType.kBrushed);
 
         shoulderPID = new PIDController(Constants.SHOULDER_kP, Constants.SHOULDER_kI, Constants.SHOULDER_kD);
         elbowPID = new PIDController(Constants.ELBOW_kP, Constants.ELBOW_kI, Constants.ELBOW_kD);
@@ -113,8 +124,37 @@ public class ArmSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        calculateArmAngles();
         super.periodic();
+        getArmAngles();
+        calculateArmAngles();
+
+        double shoulderSpeed = shoulderPID.calculate(shoulderCurrentDegrees, shoulderAngleDegrees);
+        double elbowSpeed = elbowPID.calculate(elbowCurrentDegrees, elbowAngleDegrees);
+        double wristSpeed = wristPID.calculate(wristCurrentDegrees, wristAngleDegrees);
+
+        shoulderMotor.set(shoulderSpeed);
+        elbowMotor.set(elbowSpeed);
+        wristMotor.set(wristSpeed);
+    }
+
+    /**
+     * Sets the three current position variables of the arm to the current
+     * positions of the output shafts of the motors (in degrees)
+     */
+    public void getArmAngles() {
+        double shoulderRotations = (shoulderMotor.getEncoder().getPosition()
+                                   * Constants.SHOULDER_GEAR_RATIO
+                                   * Constants.SHOULDER_CONVERSION);
+        double elbowRotations = (elbowMotor.getEncoder().getPosition()
+                                * Constants.ELBOW_GEAR_RATIO
+                                * Constants.ELBOW_CONVERSION);
+        double wristRotations = (wristMotor.getEncoder().getPosition()
+                                * Constants.WRIST_GEAR_RATIO
+                                * Constants.WRIST_CONVERSION);
+
+        shoulderCurrentDegrees = shoulderRotations * 360;
+        elbowCurrentDegrees = elbowRotations * 360;
+        wristCurrentDegrees = wristRotations * 360;
     }
 
     /**
