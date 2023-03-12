@@ -189,6 +189,13 @@ public final class Constants {
     public final static double SHOULDER_CONVERSION = 1;
     public final static double ELBOW_CONVERSION = 1;
     public final static double WRIST_CONVERSION = 1;
+
+    /**
+     * The value to multiply the arm values from the inputSubsystem by, because
+     * the inputSubsytem will return -1, 0, or 1, which is most likely not the
+     * best speed for the arm to move at
+     */
+    public final static double ARM_SPEED_TO_INCHES = 1;
 } 
 
 
