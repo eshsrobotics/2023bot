@@ -12,11 +12,18 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
  * shuffleboard
  */
 public class ShuffleboardDebug {
-    public GenericEntry shoulderAngle;
-    public GenericEntry elbowAngle;
-    public GenericEntry wristAngle;
+    public GenericEntry shoulderCurrentAngle;
+    public GenericEntry elbowCurrentAngle;
+    public GenericEntry wristCurrentAngle;
+    public GenericEntry shoulderDesiredAngle;
+    public GenericEntry elbowDesiredAngle;
+    public GenericEntry wristDesiredAngle;
     public GenericEntry x;
     public GenericEntry y;
+
+    /**
+     * If true, arm angles are from the shuffleboard instead of controller commands
+     */
     public GenericEntry overrideAngles;
 
     public GenericEntry frontLeft;
@@ -34,18 +41,33 @@ public class ShuffleboardDebug {
         var layout = armTab.getLayout("bar", BuiltInLayouts.kGrid)
             .withPosition(0, 0)
             .withSize(1, 1);
-        shoulderAngle = armTab.add("Shoulder angle", 0)
+        shoulderCurrentAngle = armTab.add("Current shoulder angle", 0)
             .withPosition(0, 0)
             .withSize(2, 2)
             .withWidget(BuiltInWidgets.kGyro)
             .getEntry();
-        elbowAngle = armTab.add("Elbow angle", 0)
+        elbowCurrentAngle = armTab.add("Current elbow angle", 0)
             .withPosition(2, 0)
             .withSize(2, 2)
             .withWidget(BuiltInWidgets.kGyro)
             .getEntry();
-        wristAngle = armTab.add("Wrist angle", 0)
+        wristCurrentAngle = armTab.add("Current wrist angle", 0)
             .withPosition(4, 0)
+            .withSize(2, 2)
+            .withWidget(BuiltInWidgets.kGyro)
+            .getEntry();
+        shoulderDesiredAngle = armTab.add("Desired shoulder angle", 0)
+            .withPosition(6, 0)
+            .withSize(2, 2)
+            .withWidget(BuiltInWidgets.kGyro)
+            .getEntry();
+        elbowDesiredAngle = armTab.add("EDesired elbow angle", 0)
+            .withPosition(8, 0)
+            .withSize(2, 2)
+            .withWidget(BuiltInWidgets.kGyro)
+            .getEntry();
+        wristDesiredAngle = armTab.add("Desired wrist angle", 0)
+            .withPosition(10, 0)
             .withSize(2, 2)
             .withWidget(BuiltInWidgets.kGyro)
             .getEntry();

@@ -109,9 +109,7 @@ public class ArmSubsystem extends SubsystemBase {
 
         this.debug = debug;
 
-        shoulderAngleDegrees = Constants.SHOULDER_START_ANGLE;
-        elbowAngleDegrees = Constants.ELBOW_START_ANGLE;
-        wristAngleDegrees = Constants.WRIST_START_ANGLE;
+        getArmAngles();
 
         shoulderMotor = new CANSparkMax(Constants.SHOULDER_MOTOR_CAN_ID, MotorType.kBrushed);
         elbowMotor = new CANSparkMax(Constants.ELBOW_MOTOR_CAN_ID, MotorType.kBrushed);
@@ -125,6 +123,7 @@ public class ArmSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         super.periodic();
+
         getArmAngles();
         calculateArmAngles();
 
@@ -152,9 +151,13 @@ public class ArmSubsystem extends SubsystemBase {
                                 * Constants.WRIST_GEAR_RATIO
                                 * Constants.WRIST_CONVERSION);
 
-        shoulderCurrentDegrees = shoulderRotations * 360;
-        elbowCurrentDegrees = elbowRotations * 360;
-        wristCurrentDegrees = wristRotations * 360;
+        shoulderCurrentDegrees = shoulderRotations * 360 + Constants.SHOULDER_START_ANGLE;
+        elbowCurrentDegrees = elbowRotations * 360 + Constants.ELBOW_START_ANGLE;
+        wristCurrentDegrees = wristRotations * 360 + Constants.WRIST_START_ANGLE;
+
+        debug.shoulderCurrentAngle.setDouble(shoulderCurrentDegrees);
+        debug.elbowCurrentAngle.setDouble(elbowCurrentDegrees);
+        debug.wristCurrentAngle.setDouble(wristCurrentDegrees);
     }
 
     /**
@@ -177,13 +180,17 @@ public class ArmSubsystem extends SubsystemBase {
         
         
         if (debug.overrideAngles.getBoolean(false)) {
-            shoulderAngleDegrees = debug.shoulderAngle.getDouble(0);
-            elbowAngleDegrees = debug.elbowAngle.getDouble(0);
-            wristAngleDegrees = debug.wristAngle.getDouble(0);
+            // If overrideAngles is pressed in the shuffleboard, this will set
+            // the arm angles to the shuffleboard values
+            shoulderAngleDegrees = debug.shoulderDesiredAngle.getDouble(0);
+            elbowAngleDegrees = debug.elbowDesiredAngle.getDouble(0);
+            wristAngleDegrees = debug.wristDesiredAngle.getDouble(0);
         } else {
-            debug.shoulderAngle.setDouble(shoulderAngleDegrees);
-            debug.elbowAngle.setDouble(elbowAngleDegrees);
-            debug.wristAngle.setDouble(wristAngleDegrees);
+            // If overrideAngles is false, this will set the arm angles in the
+            // shuffleboard to the arm angles
+            debug.shoulderDesiredAngle.setDouble(shoulderAngleDegrees);
+            debug.elbowDesiredAngle.setDouble(elbowAngleDegrees);
+            debug.wristDesiredAngle.setDouble(wristAngleDegrees);
         }
     }
 
