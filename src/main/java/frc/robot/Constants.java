@@ -189,6 +189,11 @@ public final class Constants {
     public final static double SHOULDER_CONVERSION = 1;
     public final static double ELBOW_CONVERSION = 1;
     public final static double WRIST_CONVERSION = 1;
+
+    /**
+     * The basic deadzone value used for most joysticks and triggers.
+     */
+    public final static double DEADZONE = 0.1;
 } 
 
 

@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.ShuffleboardDebug;
 
-/** 
+/**
  * Abstracts user input to three different values for, the front-back value, the
  * left-right value, and the rotation value for a mecanum drive
  */
@@ -26,18 +26,20 @@ public class InputSubsystem extends SubsystemBase {
     private double frontBack;
     private double leftRight;
     private double rotation;
+    private int armX;
+    private int armY;
     private ShuffleboardDebug debug;
 
     public InputSubsystem(ShuffleboardDebug debug) {
         try {
-            xboxController = new XboxController(Constants.XBOX_PORT); 
-        } catch(Exception e) {
+            xboxController = new XboxController(Constants.XBOX_PORT);
+        } catch (Exception e) {
             System.out.format("Exception caught while initializing input subsystem: %s\n", e.getMessage());
         }
 
         try {
-            joystickController = new Joystick(Constants.JOYSTICK_PORT); 
-        } catch(Exception e) {
+            joystickController = new Joystick(Constants.JOYSTICK_PORT);
+        } catch (Exception e) {
             System.out.format("Exception caught while initializing input subsystem: %s\n", e.getMessage());
         }
 
@@ -46,41 +48,96 @@ public class InputSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        
+
         super.periodic();
         double xboxFrontBack = 0.0;
         double xboxLeftRight = 0.0;
         double xboxRotation = 0.0;
-        
+        int xboxArmX = 0;
+        int xboxArmY = 0;
+
         double joystickFrontBack = 0.0;
         double joystickLeftRight = 0.0;
         double joystickRotation = 0.0;
-        
+        int joystickArmX = 0;
+        int joystickArmY = 0;
+        /**
+         * jHat is one of eight angle values that is given by the small
+         * "joystick" on the top of the Logitech Extreme 3D Pro. It is given in
+         * 45 degree increments from 0-315, and returns -1 if no input is given
+         */
+        int jHat = -1;
+
+        boolean clawMode = false;
+
         if (xboxController != null) {
-            xboxFrontBack = xboxController.getLeftY();
+            xboxFrontBack = xboxController.getRightX();
             xboxLeftRight = xboxController.getLeftX();
-            xboxRotation = xboxController.getRightX();
+            xboxRotation = xboxController.getLeftY();
+            if (xboxController.getRightBumper()) {
+                // If right bumper is pressed, we are moving the arm away from
+                // the robot
+                xboxArmX = 1;
+            } else if (xboxController.getLeftBumper()) {
+                // If left bumper is pressed, we move the arm towards the robot
+                xboxArmX = -1;
+            }
+            if (xboxController.getRightTriggerAxis() > Constants.DEADZONE) {
+                // if right trigger is pressed, we move the arm up
+                xboxArmY = 1;
+            } else if (xboxController.getLeftTriggerAxis() > Constants.DEADZONE) {
+                // if left trigger is pressed, we move the arm down
+                xboxArmY = -1;
+            }
         }
 
         if (joystickController != null) {
             joystickFrontBack = joystickController.getY();
             joystickLeftRight = joystickController.getX();
             joystickRotation = joystickController.getZ();
+            clawMode = joystickController.getTrigger();
+            jHat = joystickController.getPOV();
         }
 
-        // Intelligently combine simultaneous inputs
-        frontBack = MathUtil.clamp(xboxRotation + joystickFrontBack, -1, 1);
-        leftRight = MathUtil.clamp(xboxLeftRight + joystickLeftRight, -1, 1);
-        rotation = MathUtil.clamp(xboxFrontBack + joystickRotation, -1, 1);
+        if (!clawMode) {
+            // Intelligently combine simultaneous inputs
+            frontBack = MathUtil.clamp(xboxFrontBack + joystickFrontBack, -1, 1);
+            leftRight = MathUtil.clamp(xboxLeftRight + joystickLeftRight, -1, 1);
+            rotation = MathUtil.clamp(xboxRotation + joystickRotation, -1, 1);
+            if (jHat != -1) {
+                // The hat is being manipulated
+                joystickArmY = (jHat > 90 && jHat < 270 ? -1 : jHat < 90 || jHat > 270 ? 1 : 0);
+                joystickArmX = (jHat > 0 && jHat < 180 ? 1 : jHat > 180 ? -1 : 0);
+            }
+
+            armX = xboxArmX + joystickArmX;
+            armY = xboxArmY + joystickArmY;
+        } else {
+            final double CLAW_MODE_TRANSLATIONAL_SPEED = 0.2;
+            if (jHat != -1) {
+                frontBack = (jHat > 90 && jHat < 270 ?  -CLAW_MODE_TRANSLATIONAL_SPEED:  jHat < 90 || jHat > 270 ? CLAW_MODE_TRANSLATIONAL_SPEED : 0);
+                leftRight = (jHat > 0 && jHat < 180 ? CLAW_MODE_TRANSLATIONAL_SPEED : jHat > 180 ? -CLAW_MODE_TRANSLATIONAL_SPEED : 0);
+            }
+            if (joystickFrontBack > Constants.DEADZONE) {
+                armY = -1;
+            } else if (joystickFrontBack < -Constants.DEADZONE) {
+                armY = 1;
+            }
+            if (joystickRotation > Constants.DEADZONE) {
+                armX = -1;
+            } else if (joystickRotation < -Constants.DEADZONE) {
+                armX = 1;
+            }
+        }
 
         // Adds a deadzone to the controller of 0.1, or 10%
-        if (Math.abs(frontBack) < 0.1) {
+        if (Math.abs(frontBack) < Constants.DEADZONE) {
             frontBack = 0.0;
         }
-        if (Math.abs(leftRight) < 0.1){
+        if (Math.abs(leftRight) < Constants.DEADZONE) {
             leftRight = 0.0;
         }
-        if (Math.abs(rotation) < 0.1) {
+        if (Math.abs(rotation) < Constants.DEADZONE) {
             rotation = 0.0;
         }
 
@@ -108,5 +165,13 @@ public class InputSubsystem extends SubsystemBase {
      */
     public double getRotation() {
         return rotation;
+    }
+
+    public int getArmX() {
+        return armX;
+    }
+
+    public int getArmY() {
+        return armY;
     }
 }
