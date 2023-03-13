@@ -111,7 +111,9 @@ public class VroomSubsystem extends SubsystemBase {
      */
     public VroomSubsystem(InputSubsystem inputSubsystem, ShuffleboardDebug debug) {
         backRight = new CANSparkMax(Constants.BACK_RIGHT_CAN_ID, MotorType.kBrushed);
+        backRight.setInverted(true);
         frontRight = new CANSparkMax(Constants.FRONT_RIGHT_CAN_ID, MotorType.kBrushed);
+        frontRight.setInverted(true);
         backLeft = new CANSparkMax(Constants.BACK_LEFT_CAN_ID, MotorType.kBrushed);
         frontLeft = new CANSparkMax(Constants.FRONT_LEFT_CAN_ID, MotorType.kBrushed);
         drive = new MecanumDrive(frontLeft, backLeft, frontRight, backRight);

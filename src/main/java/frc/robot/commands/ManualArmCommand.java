@@ -5,11 +5,11 @@ import frc.robot.Constants;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.InputSubsystem;
 
-public class TeleopArmCommand extends CommandBase {
+public class ManualArmCommand extends CommandBase {
     private InputSubsystem input;
     private ArmSubsystem arm;
 
-    public TeleopArmCommand(InputSubsystem input, ArmSubsystem arm) {
+    public ManualArmCommand(InputSubsystem input, ArmSubsystem arm) {
         this.input = input;
         this.arm = arm;
     }

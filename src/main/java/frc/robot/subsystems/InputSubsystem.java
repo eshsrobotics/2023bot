@@ -28,6 +28,10 @@ public class InputSubsystem extends SubsystemBase {
     private double rotation;
     private int armX;
     private int armY;
+    private boolean highGoal = false;
+    private boolean lowGoal = false;
+    private boolean floor = false;
+    private boolean resetArm = false;
     private ShuffleboardDebug debug;
 
     public InputSubsystem(ShuffleboardDebug debug) {
@@ -61,6 +65,9 @@ public class InputSubsystem extends SubsystemBase {
         double joystickRotation = 0.0;
         int joystickArmX = 0;
         int joystickArmY = 0;
+
+        
+        
         /**
          * jHat is one of eight angle values that is given by the small
          * "joystick" on the top of the Logitech Extreme 3D Pro. It is given in
@@ -71,9 +78,9 @@ public class InputSubsystem extends SubsystemBase {
         boolean clawMode = false;
 
         if (xboxController != null) {
-            xboxFrontBack = xboxController.getRightX();
+            xboxFrontBack = xboxController.getLeftY();
             xboxLeftRight = xboxController.getLeftX();
-            xboxRotation = xboxController.getLeftY();
+            xboxRotation = xboxController.getRightX();
             if (xboxController.getRightBumper()) {
                 // If right bumper is pressed, we are moving the arm away from
                 // the robot
@@ -89,6 +96,10 @@ public class InputSubsystem extends SubsystemBase {
                 // if left trigger is pressed, we move the arm down
                 xboxArmY = -1;
             }
+            highGoal = xboxController.getYButton();
+            lowGoal = xboxController.getXButton();
+            floor = xboxController.getAButton();
+            resetArm = xboxController.getBButton();
         }
 
         if (joystickController != null) {
@@ -97,13 +108,18 @@ public class InputSubsystem extends SubsystemBase {
             joystickRotation = joystickController.getZ();
             clawMode = joystickController.getTrigger();
             jHat = joystickController.getPOV();
+            highGoal = joystickController.getRawButton(5);
+            lowGoal = joystickController.getRawButton(3);
+            floor = joystickController.getRawButton(6);
+            resetArm = joystickController.getRawButton(4);
+
         }
 
         if (!clawMode) {
             // Intelligently combine simultaneous inputs
             frontBack = MathUtil.clamp(xboxFrontBack + joystickFrontBack, -1, 1);
-            leftRight = MathUtil.clamp(xboxLeftRight + joystickLeftRight, -1, 1);
-            rotation = MathUtil.clamp(xboxRotation + joystickRotation, -1, 1);
+            leftRight = -MathUtil.clamp(xboxLeftRight + joystickLeftRight, -1, 1);
+            rotation = -MathUtil.clamp(xboxRotation + joystickRotation, -1, 1);
             if (jHat != -1) {
                 // The hat is being manipulated
                 joystickArmY = (jHat > 90 && jHat < 270 ? -1 : jHat < 90 || jHat > 270 ? 1 : 0);
@@ -173,5 +189,21 @@ public class InputSubsystem extends SubsystemBase {
 
     public int getArmY() {
         return armY;
+    }
+
+    public boolean getHighGoalButton() {
+        return highGoal;
+    }
+
+    public boolean getLowGoalButton() {
+        return lowGoal;
+    }
+
+    public boolean getFloorButton() {
+        return floor;
+    }
+
+    public boolean getResetArmButton() {
+        return resetArm;
     }
 }

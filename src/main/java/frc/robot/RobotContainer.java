@@ -11,6 +11,8 @@ import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.InputSubsystem;
 import frc.robot.subsystems.VroomSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RepeatCommand;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -28,6 +30,8 @@ public class RobotContainer {
   private InputSubsystem inputSubsystem;
   private ShuffleboardDebug shuffleboardDebug;
 
+  private Command teleopCompositeCommand;
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the button bindings
@@ -35,6 +39,12 @@ public class RobotContainer {
     shuffleboardDebug = new ShuffleboardDebug();
     inputSubsystem = new InputSubsystem(shuffleboardDebug);
     driveSubsystem  = new VroomSubsystem(inputSubsystem, shuffleboardDebug);
+    
+    teleopCompositeCommand = new RepeatCommand(new InstantCommand(() -> {
+      // This repeat command dispatches other commands and then exits
+      
+
+    }, inputSubsystem));
   
   }
 
