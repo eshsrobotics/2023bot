@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.ShuffleboardDebug;
@@ -32,6 +33,8 @@ public class InputSubsystem extends SubsystemBase {
     private boolean lowGoal = false;
     private boolean floor = false;
     private boolean resetArm = false;
+    private boolean goliathForward = false;
+    private boolean goliathReverse = false;
     private ShuffleboardDebug debug;
 
     public InputSubsystem(ShuffleboardDebug debug) {
@@ -100,6 +103,8 @@ public class InputSubsystem extends SubsystemBase {
             lowGoal = xboxController.getXButton();
             floor = xboxController.getAButton();
             resetArm = xboxController.getBButton();
+            goliathForward = xboxController.getPOV() > -45 && xboxController.getPOV() < 45;
+            goliathReverse = xboxController.getPOV() > 135 && xboxController.getPOV() < 225;
         }
 
         if (joystickController != null) {
@@ -108,11 +113,12 @@ public class InputSubsystem extends SubsystemBase {
             joystickRotation = joystickController.getZ();
             clawMode = joystickController.getTrigger();
             jHat = joystickController.getPOV();
-            highGoal = joystickController.getRawButton(5);
-            lowGoal = joystickController.getRawButton(3);
-            floor = joystickController.getRawButton(6);
-            resetArm = joystickController.getRawButton(4);
-
+            highGoal = highGoal || joystickController.getRawButton(5);
+            lowGoal = lowGoal || joystickController.getRawButton(3);
+            floor = floor || joystickController.getRawButton(6);
+            resetArm = resetArm || joystickController.getRawButton(4);
+            goliathForward = goliathForward || joystickController.getRawButton(9);
+            goliathReverse = goliathReverse || joystickController.getRawButton(11);
         }
 
         if (!clawMode) {
@@ -205,5 +211,19 @@ public class InputSubsystem extends SubsystemBase {
 
     public boolean getResetArmButton() {
         return resetArm;
+    }
+
+    public boolean getGoliathForwardButton() {
+        return goliathForward;
+    }
+
+    public boolean getGoliathReverseButton() {
+        return goliathReverse;
+    }
+    
+    public void rumbleXbox() {
+        if (xboxController != null) {
+            xboxController.setRumble(RumbleType.kBothRumble, 1);
+        }
     }
 }
