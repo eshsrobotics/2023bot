@@ -108,9 +108,11 @@ public class ClawSubsystem extends SubsystemBase {
             }
         } else {
             intaking = false;
-            if (Timer.getFPGATimestamp() < intakeStartTimeSeconds + Constants.MINIMUM_ROTATION_TIME_SECONDS) {
+            if (!input.manualIntake() &&
+                Timer.getFPGATimestamp() < intakeStartTimeSeconds + Constants.MINIMUM_ROTATION_TIME_SECONDS) {
                 // The user started intaking and then released recently (i.e.,
-                // within the minimum roll time.)  That means we need to keep rolling!
+                // within the minimum roll time.) and is not pressing the manual intake button
+                // That means we need to keep rolling!
                 rollerSpeed = Constants.CLAW_MOTOR_SLOW_DOWN_FACTOR;
             } else {
                 // The user released the intake a long time ago, or they never

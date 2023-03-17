@@ -217,11 +217,13 @@ public class VroomSubsystem extends SubsystemBase {
 
             drive.driveCartesian(inputSubsystem.getFrontBack(),
                                  inputSubsystem.getLeftRight(),
-                                 inputSubsystem.getRotation());
+                                 inputSubsystem.getRotation(),
+                                 gyro.getRotation2d());
 
             var wheelSpeeds = MecanumDrive.driveCartesianIK(inputSubsystem.getFrontBack(),
                                  inputSubsystem.getLeftRight(),
-                                 inputSubsystem.getRotation());
+                                 inputSubsystem.getRotation(),
+                                 gyro.getRotation2d());
             
             debug.frontLeft.setDouble(wheelSpeeds.frontLeft);
             debug.frontRight.setDouble(wheelSpeeds.frontRight);

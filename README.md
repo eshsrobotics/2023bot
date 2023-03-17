@@ -30,8 +30,10 @@ that have not been verified to work over CAN or PWM.
   - L1 (Left bumper) will decrease (Move towards the robot) the arm's X value
   - R2 (Right trigger) will increase (Move up) the arm's Y value
   - L2 (Left trigger) will decrease (Move down) the arm's Y value
-  - B + R2 (Right trigger) controls claw roller pickup (intake)
-  - B + L2 (Left trigger) controls claw roller release (outtake)
+  - D-pad up controls claw roller pickup (intake) (minumum time of 1 second,
+    maximum time of [minumum time + 10 seconds], may be changed later)
+    - If holding A, there is no minimum time
+  - D-pad down controls claw roller release (outtake)
 
 - If using a joystick
 
@@ -45,8 +47,6 @@ that have not been verified to work over CAN or PWM.
       right decreases the X value of the arm.
     * The small joystick _controls the drivetrain_ (Forward/back controls
       driving forward/backward, left/right controls strafing)
-  - ? controls claw roller pickup (intake)
-  - ? controls claw roller release (outtake)
 
 - If using both an Xbox controller and a joystick
 

@@ -36,6 +36,7 @@ public class InputSubsystem extends SubsystemBase {
     private boolean goliathForward = false;
     private boolean goliathReverse = false;
     private double goliathSpeed = 0;
+    private boolean manualIntake = false;
     private ShuffleboardDebug debug;
 
     public InputSubsystem(ShuffleboardDebug debug) {
@@ -112,9 +113,13 @@ public class InputSubsystem extends SubsystemBase {
             
             highGoal = xboxController.getYButton();
             lowGoal = xboxController.getXButton();
-            floor = xboxController.getAButton();
+            // D-pad left
+            floor = xboxController.getPOV() > 225 && xboxController.getPOV() < 315;
             resetArm = xboxController.getBButton();
+            manualIntake = xboxController.getAButton();
+            // D-pad up
             goliathForward = xboxController.getPOV() > -45 && xboxController.getPOV() < 45;
+            // D-pad down
             goliathReverse = xboxController.getPOV() > 135 && xboxController.getPOV() < 225;
         }
 
@@ -251,7 +256,7 @@ public class InputSubsystem extends SubsystemBase {
      * @return
      */
     public boolean manualIntake() {
-         
+        return manualIntake;
     }
     
     public void rumbleXbox() {
