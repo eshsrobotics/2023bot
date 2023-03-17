@@ -30,8 +30,8 @@ that have not been verified to work over CAN or PWM.
   - L1 (Left bumper) will decrease (Move towards the robot) the arm's X value
   - R2 (Right trigger) will increase (Move up) the arm's Y value
   - L2 (Left trigger) will decrease (Move down) the arm's Y value
-  - ? controls claw roller pickup (intake)
-  - ? controls claw roller release (outtake)
+  - B + R2 (Right trigger) controls claw roller pickup (intake)
+  - B + L2 (Left trigger) controls claw roller release (outtake)
 
 - If using a joystick
 

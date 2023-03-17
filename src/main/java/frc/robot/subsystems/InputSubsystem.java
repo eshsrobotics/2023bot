@@ -35,6 +35,7 @@ public class InputSubsystem extends SubsystemBase {
     private boolean resetArm = false;
     private boolean goliathForward = false;
     private boolean goliathReverse = false;
+    private double goliathSpeed = 0;
     private ShuffleboardDebug debug;
 
     public InputSubsystem(ShuffleboardDebug debug) {
@@ -84,6 +85,7 @@ public class InputSubsystem extends SubsystemBase {
             xboxFrontBack = xboxController.getLeftY();
             xboxLeftRight = xboxController.getLeftX();
             xboxRotation = xboxController.getRightX();
+
             if (xboxController.getRightBumper()) {
                 // If right bumper is pressed, we are moving the arm away from
                 // the robot
@@ -92,13 +94,22 @@ public class InputSubsystem extends SubsystemBase {
                 // If left bumper is pressed, we move the arm towards the robot
                 xboxArmX = -1;
             }
-            if (xboxController.getRightTriggerAxis() > Constants.DEADZONE) {
-                // if right trigger is pressed, we move the arm up
-                xboxArmY = 1;
-            } else if (xboxController.getLeftTriggerAxis() > Constants.DEADZONE) {
-                // if left trigger is pressed, we move the arm down
-                xboxArmY = -1;
+
+            if (xboxController.getBButtonPressed()) {
+                // Control claw intake and outake.
+                goliathSpeed = xboxController.getRightTriggerAxis() - 
+                    xboxController.getLeftTriggerAxis();
+            } else {
+                // Control the arm y as normal.
+                if (xboxController.getRightTriggerAxis() > Constants.DEADZONE) {
+                    // if right trigger is pressed, we move the arm up
+                    xboxArmY = 1;
+                } else if (xboxController.getLeftTriggerAxis() > Constants.DEADZONE) {
+                    // if left trigger is pressed, we move the arm down
+                    xboxArmY = -1;
+                }
             }
+            
             highGoal = xboxController.getYButton();
             lowGoal = xboxController.getXButton();
             floor = xboxController.getAButton();
@@ -220,6 +231,20 @@ public class InputSubsystem extends SubsystemBase {
     public boolean getGoliathReverseButton() {
         return goliathReverse;
     }
+ 
+    /**
+     * The Goliath intake at the end of the claw is controlled by two roller
+     * motors that spin in opposite directions.  Anything caught between them
+     * can either be taken up (intake) or released (outtake.)
+     * 
+     * <p>This function returns a single number that determines the roller
+     * speed.  If that number is positive, that represents claw intake; 
+     * negative values represent claw outtake.</p>
+     * @return A number between -1.0 and 1.0 (inclusive.)
+     */
+    public double getGoliathSpeed() {
+        return goliathSpeed;
+    } 
     
     public void rumbleXbox() {
         if (xboxController != null) {

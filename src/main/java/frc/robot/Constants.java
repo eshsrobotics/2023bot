@@ -163,19 +163,31 @@ public final class Constants {
 
     // TODO: Find actual CAN IDs for the arm motors
     /**
-     * The CAN IDs for the arm motors
+     * The CAN IDs for the arm and wrist motors.
      */
     public final static int SHOULDER_MOTOR_CAN_ID = 0;
     public final static int ELBOW_MOTOR_CAN_ID = 0;
     public final static int WRIST_MOTOR_CAN_ID = 0;
+    public final static int RIGHT_WRIST_ROLLER_CAN_ID = 0;
+    public final static int LEFT_WRIST_ROLLER_CAN_ID = 0;
 
     /**
-     * The expected starting angles for the arm motors
+     * The expected starting angles for the arm motors.
+     *
+     * <ul>
+     *   <li>The starting angle for the **shoulder** is raised from horizontal,
+     *       but less than a right angle.</li>
+     *   <li>The starting angle for the **elbow** is much further around than
+     *       straight out (180 degrees) -- so much further that the arm bends
+     *       backward over itself.</li>
+     *   <li>The starting angle for the wrist is pointed not down (90 degrees),
+     *       not straight (180 degrees), but the opposite of down (270
+     *       degrees.)</li>
+     * </ul>
      */
-    public final static double SHOULDER_START_ANGLE = 145;
-    public final static double ELBOW_START_ANGLE = -125;
-    // If it works, congratulate Izzy. Otherwise, blame her for broken arm.
-    public final static double WRIST_START_ANGLE = 90;
+    public final static double SHOULDER_START_ANGLE = 55;
+    public final static double ELBOW_START_ANGLE = 180 + 125;
+    public final static double WRIST_START_ANGLE = -90;
 
     public final static double SHOULDER_MAX_ANGLE = 180;
     public final static double ELBOW_MAX_ANGLE = 0;
@@ -223,6 +235,13 @@ public final class Constants {
      * final angle.
      */
     public final static double PID_TOLERANCE_DEGREES = 1;
+
+    /**
+     * Precautionairy measure if to slow down the speed of the claw motor if it
+     * is too high.
+     */
+    public final static double CLAW_MOTOR_SLOW_DOWN_FACTOR = 1.0;
+
 } 
 
 
