@@ -15,7 +15,7 @@ that have not been verified to work over CAN or PWM.
 | --- | --- | --- | --- |
 | Front left wheel | Spark MAX | 6 (CAN) | Label: **G** (tested, works) |
 | Front right wheel | Spark MAX | 9 (CAN) | Label: **J** (tested, works) |
-| Back right wheel | Spark MAX | 5 (CAN) | Label: **A** (tested, works) |
+| Back right wheel | Spark MAX | 5 (CAN) | Label: **E** (untested, works) |
 | Back left wheel | Spark MAX | 1 (CAN) | Label: **B** (tested, works) |
 
 ## Control scheme
