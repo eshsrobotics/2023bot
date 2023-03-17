@@ -245,7 +245,14 @@ public final class Constants {
     /**
      * The minimum amount of time to move the rollers on the claw
      */
-    public final static double MINIMUM_ROTATION_TIME_SECONDS = 5.0;
+    public final static double MINIMUM_ROTATION_TIME_SECONDS = 1.0;
+
+    /**
+     * The maximum amount of time to move the rollers on the claw
+     *
+     * Having the rollers on for _too_ long risks damaging cone game elements,
+     * since we have no sensors to tell us if we've inhaled a cone up to the
+     * base.
+     */
+    public final static double MAXIMUM_ROTATION_TIME_SECONDS = MINIMUM_ROTATION_TIME_SECONDS + 5;
 } 
-
-

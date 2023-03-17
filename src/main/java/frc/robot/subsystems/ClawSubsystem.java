@@ -101,6 +101,10 @@ public class ClawSubsystem extends SubsystemBase {
 
                 // Start rollin'!
                 rollerSpeed = Constants.CLAW_MOTOR_SLOW_DOWN_FACTOR;
+            } else if (Timer.getFPGATimestamp() > intakeStartTimeSeconds + Constants.MAXIMUM_ROTATION_TIME_SECONDS) {
+                // This is to set the maximum time of holding down the
+                // button, we don't want to intake for too long
+                rollerSpeed = 0;
             }
         } else {
             intaking = false;
