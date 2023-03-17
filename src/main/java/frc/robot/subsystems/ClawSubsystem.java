@@ -1,8 +1,10 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -21,6 +23,17 @@ public class ClawSubsystem extends SubsystemBase {
 
     private ShuffleboardDebug debug;
     private InputSubsystem input;
+
+    /**
+     * Records a time stamp of when the user starts to hold the 
+     * intake button down.
+     */
+    private double intakeStartTimeSeconds;
+
+    /**
+     * True if the intake button is being held down.  False otherwise.
+     */
+    boolean intaking = false;
 
     /**
      * Default speed for when there is no input to the claw. This speed can be set
@@ -52,8 +65,16 @@ public class ClawSubsystem extends SubsystemBase {
     public ClawSubsystem(InputSubsystem input, ShuffleboardDebug debug) {
         this.debug = debug;
         this.input = input;
-        this.goliath1 = new CANSparkMax(Constants.RIGHT_WRIST_ROLLER_CAN_ID, MotorType.kBrushed);
-        this.goliath2 = new CANSparkMax(Constants.LEFT_WRIST_ROLLER_CAN_ID, MotorType.kBrushed);
+
+        CANSparkMax leftRoller =  new CANSparkMax(Constants.RIGHT_WRIST_ROLLER_CAN_ID, MotorType.kBrushed);
+        this.goliath1 = leftRoller;
+        CANSparkMax rightRoller = new CANSparkMax(Constants.LEFT_WRIST_ROLLER_CAN_ID, MotorType.kBrushed);
+        this.goliath2 = rightRoller;
+
+        // Prevents the intake from just dropping whatever it was holding if there 
+        // is no input from the controllers. 
+        leftRoller.setIdleMode(IdleMode.kBrake);
+        rightRoller.setIdleMode(IdleMode.kBrake);
     }
 
     /* (non-Javadoc)
@@ -62,15 +83,65 @@ public class ClawSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         super.periodic();
+        double rollerSpeed = 0;
 
-        if (Math.abs(input.getGoliathSpeed()) < Constants.DEADZONE) {
-            // No significant human input detected.
-            goliath1.set(automaticRollerSpeed);
-            goliath2.set(-automaticRollerSpeed);
+        // s = seconds held down
+        // b = burst time
+        // Scenario IZZY: Rollers roll for b + s seconds
+        // Scenario MATTHEW: Roll for MAX(s, b) seconds
+        // We agreed on Scenario MATTHEW.
+
+        if (input.getGoliathForwardButton()) {
+            // User is intaking a roller.
+            if (!intaking) {
+                // Prevent us from resetting the timer simply because the button
+                // is being held down.
+                intaking = true;
+                intakeStartTimeSeconds = Timer.getFPGATimestamp();
+
+                // Start rollin'!
+                rollerSpeed = Constants.CLAW_MOTOR_SLOW_DOWN_FACTOR;
+            }
         } else {
-            // Human wants claw control.
-            goliath1.set(input.getGoliathSpeed());
-            goliath2.set(-input.getGoliathSpeed());
+            intaking = false;
+            if (Timer.getFPGATimestamp() < intakeStartTimeSeconds + Constants.MINIMUM_ROTATION_TIME_SECONDS) {
+                // The user started intaking and then released recently (i.e.,
+                // within the minimum roll time.)  That means we need to keep rolling!
+                rollerSpeed = Constants.CLAW_MOTOR_SLOW_DOWN_FACTOR;
+            } else {
+                // The user released the intake a long time ago, or they never
+                // did the intake in the first place.
+                rollerSpeed = 0;
+            }
+        }
+        
+        if (input.getGoliathReverseButton()) {
+            // User is outtaking a roller.  There's no danger of killing a game
+            // element, so let us indulge in the user's whims.
+            rollerSpeed = -Constants.CLAW_MOTOR_SLOW_DOWN_FACTOR;
+        }
+        
+        // Commented out for now because this condition, as-is, would kill
+        // burst mode (the rollers are supposed to roll on their own for the 
+        // minimum time even if the human releases the controller.)
+        //
+        // We need a better condition for determining when "the human is not
+        // providing input."
+        //
+        // if (!input.getGoliathReverseButton() && 
+        //     !input.getGoliathForwardButton()) {
+        //     // No human input.  We should use the speed from the ShuffleBoard
+        //     // or from autonomous (if any.)
+        //     goliath1.set(automaticRollerSpeed);
+        //     goliath2.set(-automaticRollerSpeed);
+        // }
+
+        if (rollerSpeed == 0) {
+            goliath1.stopMotor();
+            goliath2.stopMotor();
+        } else {
+            goliath1.set(rollerSpeed);
+            goliath2.set(-rollerSpeed);
         }
     }
 }

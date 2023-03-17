@@ -242,6 +242,10 @@ public final class Constants {
      */
     public final static double CLAW_MOTOR_SLOW_DOWN_FACTOR = 1.0;
 
+    /**
+     * The minimum amount of time to move the rollers on the claw
+     */
+    public final static double MINIMUM_ROTATION_TIME_SECONDS = 5.0;
 } 
 
 
