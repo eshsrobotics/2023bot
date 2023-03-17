@@ -118,18 +118,22 @@ public final class Constants {
      */
     public final static String AUTONOMOUS_JSON_PATH = "/home/lvuser/pathweaver.json";
 
-    // TODO: Find actual values for the lengths of the arm segments
     /**
      * The distance (in inches) from the shoulder joint of the arm to the elbow
      * joint
      */
-    public final static double SHOULDER_TO_ELBOW_INCHES = 10;
+    public final static double SHOULDER_TO_ELBOW_INCHES = 19.398;
 
     /**
      * The distance (in inches) from the elbow joint of the arm to the wrist
      */
-    public final static double ELBOW_TO_WRIST_INCHES = 10;
+    public final static double ELBOW_TO_WRIST_INCHES = 21;
 
+    /**
+     * Total arm length
+     */
+    public final static double ARM_LENGTH = SHOULDER_TO_ELBOW_INCHES + ELBOW_TO_WRIST_INCHES;
+    
     /**
      * Used to convert radian values of arm angles to degrees
      */
@@ -159,27 +163,48 @@ public final class Constants {
 
     // TODO: Find actual CAN IDs for the arm motors
     /**
-     * The CAN IDs for the arm motors
+     * The CAN IDs for the arm and wrist motors.
      */
     public final static int SHOULDER_MOTOR_CAN_ID = 0;
     public final static int ELBOW_MOTOR_CAN_ID = 0;
     public final static int WRIST_MOTOR_CAN_ID = 0;
+    public final static int RIGHT_WRIST_ROLLER_CAN_ID = 0;
+    public final static int LEFT_WRIST_ROLLER_CAN_ID = 0;
 
-    // TODO: Find actual starting angles
     /**
-     * The expected starting angles for the arm motors
+     * The expected starting angles for the arm motors.
+     *
+     * <ul>
+     *   <li>The starting angle for the **shoulder** is raised from horizontal,
+     *       but less than a right angle.</li>
+     *   <li>The starting angle for the **elbow** is much further around than
+     *       straight out (180 degrees) -- so much further that the arm bends
+     *       backward over itself.</li>
+     *   <li>The starting angle for the wrist is pointed not down (90 degrees),
+     *       not straight (180 degrees), but the opposite of down (270
+     *       degrees.)</li>
+     * </ul>
      */
-    public final static double SHOULDER_START_ANGLE = 0;
-    public final static double ELBOW_START_ANGLE = 0;
-    public final static double WRIST_START_ANGLE = 0;
+    public final static double SHOULDER_START_ANGLE = 55;
+    public final static double ELBOW_START_ANGLE = 180 + 125;
+    public final static double WRIST_START_ANGLE = -90;
 
+    public final static double SHOULDER_MAX_ANGLE = 180;
+    public final static double ELBOW_MAX_ANGLE = 0;
+    public final static double WRIST_MAX_ANGLE = 160;
+
+    public final static double SHOULDER_MIN_ANGLE = 26;
+    public final static double ELBOW_MIN_ANGLE = -130;
+    public final static double WRIST_MIN_ANGLE = -160;
     /**
      * The gear ratios for the shoulder, elbow, and wrist motors
+     * 
+     * <p>All gear ratios here represent the ratio of the teeth
+     * for the input shaft to the teeth for the output shaft.</p>
      */
-    public final static double SHOULDER_GEAR_RATIO = 26 / 50;
+    public final static double SHOULDER_GEAR_RATIO = 26 / 60;
     public final static double ELBOW_GEAR_RATIO = 32 / 56;
-    // TODO: Get actual wrist gear ratio
-    public final static double WRIST_GEAR_RATIO = 1;
+    public final static double WRIST_GEAR_RATIO = 32 / 39;
 
     // TODO: Find actual conversion factors
     /**
@@ -201,6 +226,33 @@ public final class Constants {
      * best speed for the arm to move at
      */
     public final static double ARM_SPEED_TO_INCHES = 1;
+
+    // TODO: Find a value that works well for the arm
+    /**
+     * The tolerance for the arm's PIDControllers.  When we ask the 
+     * PIDControllers for the arm's three joints if they've reached their
+     * setpoint (in degrees), this is how we get them to tolerate slop in the
+     * final angle.
+     */
+    public final static double PID_TOLERANCE_DEGREES = 1;
+
+    /**
+     * Precautionairy measure if to slow down the speed of the claw motor if it
+     * is too high.
+     */
+    public final static double CLAW_MOTOR_SLOW_DOWN_FACTOR = 1.0;
+
+    /**
+     * The minimum amount of time to move the rollers on the claw
+     */
+    public final static double MINIMUM_ROTATION_TIME_SECONDS = 1.0;
+
+    /**
+     * The maximum amount of time to move the rollers on the claw
+     *
+     * Having the rollers on for _too_ long risks damaging cone game elements,
+     * since we have no sensors to tell us if we've inhaled a cone up to the
+     * base.
+     */
+    public final static double MAXIMUM_ROTATION_TIME_SECONDS = MINIMUM_ROTATION_TIME_SECONDS + 5;
 } 
-
-

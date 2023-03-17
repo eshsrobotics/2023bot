@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import org.ejml.ops.DConvertMatrixStruct;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
@@ -118,6 +120,13 @@ public class ArmSubsystem extends SubsystemBase {
         shoulderPID = new PIDController(Constants.SHOULDER_kP, Constants.SHOULDER_kI, Constants.SHOULDER_kD);
         elbowPID = new PIDController(Constants.ELBOW_kP, Constants.ELBOW_kI, Constants.ELBOW_kD);
         wristPID = new PIDController(Constants.WRIST_kP, Constants.WRIST_kI, Constants.WRIST_kD);
+
+        // Set the tolerance of each PIDController to PID_TOLERANCE_DEGREES (If
+        // the current angle is within PID_TOLERANCE_DEGREES of the desired
+        // angle, the PIDController will see it as at the desired angle)
+        shoulderPID.setTolerance(Constants.PID_TOLERANCE_DEGREES);
+        elbowPID.setTolerance(Constants.PID_TOLERANCE_DEGREES);
+        wristPID.setTolerance(Constants.PID_TOLERANCE_DEGREES);
     }
 
     @Override
@@ -158,6 +167,56 @@ public class ArmSubsystem extends SubsystemBase {
         debug.shoulderCurrentAngle.setDouble(shoulderCurrentDegrees);
         debug.elbowCurrentAngle.setDouble(elbowCurrentDegrees);
         debug.wristCurrentAngle.setDouble(wristCurrentDegrees);
+    }
+
+    /**
+     * Given X and Y in inches, use trigonometry to calculate the angles
+     * of the three joints of our robotic arm.
+     * 
+     * @param X The arm's horizontal extent forward and away from the robot, in
+     *          inches.
+     * @param Y The arms vertical extent up and down from the sholder's axle.
+     * @return An array of three doubles:
+     *         <ol>
+     *           <li>The shoulder angle in degrees;</li>
+     *           <li>The elbow angle in degrees;</li>
+     *           <li>The wrist angle in degrees.</li>
+     *         </ol>
+     *         These are theoretical angles.  We need to ensure that the
+     *         {@link #getArmAngles *actual* arm angles} correspond to these,
+     *         or the arm won't work! 
+     * @see https://jamboard.google.com/d/1Bz9xzJpm3pIMYsm-gLkg-LUfpJiKOZU1y_JM5vCmjVU/viewer?f=0
+     */
+    public double[] computeArmInverseKinematics(double X, double Y) {
+        double[] arrangle = new double[3]; 
+        final double L1 = Constants.SHOULDER_TO_ELBOW_INCHES;
+        final double L2 = Constants.ELBOW_TO_WRIST_INCHES;
+        double h = Math.sqrt((X * X) + (Y * Y));
+        double gamma = Math.acos(((h * h) - (L1 * L1) - (L2 * L2)) / (-2 * L1 * L2));
+        double alpha = Math.asin((L2 * Math.sin(gamma)) / h);
+        double beta = Math.PI - alpha - gamma;
+        double theta = Math.asin(Y / h);
+        double fi = Math.asin(X / h);
+        arrangle[0] = (alpha * Constants.RADIANS_TO_DEGREES) + (theta * Constants.RADIANS_TO_DEGREES);
+        arrangle[1] = gamma * Constants.RADIANS_TO_DEGREES;
+        arrangle[2] = (beta * Constants.RADIANS_TO_DEGREES) + (fi * Constants.RADIANS_TO_DEGREES);
+        
+        
+        if (debug.overrideAngles.getBoolean(false)) {
+            // If overrideAngles is pressed in the shuffleboard, this will set
+            // the arm angles to the shuffleboard values
+            arrangle[0] = debug.shoulderDesiredAngle.getDouble(0);
+            arrangle[1] = debug.elbowDesiredAngle.getDouble(0);
+            arrangle[2] = debug.wristDesiredAngle.getDouble(0);
+        }
+        return arrangle; 
+    }
+
+    /**
+     * Returns true if all the PIDControllers are at their setpoints
+     */
+    public boolean PIDControllersDone() {
+        return shoulderPID.atSetpoint() && elbowPID.atSetpoint() && wristPID.atSetpoint();
     }
 
     /**

@@ -30,18 +30,23 @@ that have not been verified to work over CAN or PWM.
   - L1 (Left bumper) will decrease (Move towards the robot) the arm's X value
   - R2 (Right trigger) will increase (Move up) the arm's Y value
   - L2 (Left trigger) will decrease (Move down) the arm's Y value
+  - B + R2 (Right trigger) controls claw roller pickup (intake)
+  - B + L2 (Left trigger) controls claw roller release (outtake)
 
 - If using a joystick
 
   - Moving the joystick controls translation and rotating the joystick controls
     rotation, and the small joystick controls the arm (Left/right controls X
     value and forward/back controls Y value)
-  - Holding the trigger will enter claw mode, in which moving the joystick
-    forward/back will raise (pull toward driver) and lower (push away from
-    driver) the arm's Y value. Rotating the joystick left increases the X value
-    of the arm, and rotating the joystick right decreases the X value of the
-    arm, and the small joystick controls the drivetrain (Forward/back controls
-    driving forward/backward, left/right controls strafing)
+  - Holding the trigger will enter **claw mode**, in which:
+    * Moving the joystick forward/back will raise (pull toward driver) and lower (push away from
+      driver) the arm's Y value.
+    * Rotating the joystick left increases the X value of the arm, and rotating the joystick 
+      right decreases the X value of the arm.
+    * The small joystick _controls the drivetrain_ (Forward/back controls
+      driving forward/backward, left/right controls strafing)
+  - ? controls claw roller pickup (intake)
+  - ? controls claw roller release (outtake)
 
 - If using both an Xbox controller and a joystick
 
