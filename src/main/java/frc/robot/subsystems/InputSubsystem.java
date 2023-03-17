@@ -245,6 +245,14 @@ public class InputSubsystem extends SubsystemBase {
     public double getGoliathSpeed() {
         return goliathSpeed;
     } 
+
+    /**
+     * Used when the user wants fine grain control over the intake.
+     * @return
+     */
+    public boolean manualIntake() {
+         
+    }
     
     public void rumbleXbox() {
         if (xboxController != null) {
