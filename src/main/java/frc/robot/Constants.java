@@ -204,7 +204,7 @@ public final class Constants {
      */
     public final static double SHOULDER_GEAR_RATIO = 26 / 60;
     public final static double ELBOW_GEAR_RATIO = 32 / 56;
-    public final static double WRIST_GEAR_RATIO = 32 / 39;
+    public final static double WRIST_GEAR_RATIO = 1;
 
     // TODO: Find actual conversion factors
     /**
@@ -255,4 +255,6 @@ public final class Constants {
      * base.
      */
     public final static double MAXIMUM_ROTATION_TIME_SECONDS = MINIMUM_ROTATION_TIME_SECONDS + 5;
+
+    public final static double AUTON_BACKWARD_TIME_SECONDS = 2.0;
 } 

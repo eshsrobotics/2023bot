@@ -37,6 +37,8 @@ public class InputSubsystem extends SubsystemBase {
     private boolean goliathReverse = false;
     private double goliathSpeed = 0;
     private boolean manualIntake = false;
+    private boolean debugCommandJointForward = false;
+    private boolean debugCommandJointBackwards = false;
     private ShuffleboardDebug debug;
 
     public InputSubsystem(ShuffleboardDebug debug) {
@@ -116,11 +118,11 @@ public class InputSubsystem extends SubsystemBase {
             // D-pad left
             floor = xboxController.getPOV() > 225 && xboxController.getPOV() < 315;
             resetArm = xboxController.getBButton();
-            manualIntake = xboxController.getAButton();
             // D-pad up
             goliathForward = xboxController.getPOV() > -45 && xboxController.getPOV() < 45;
             // D-pad down
             goliathReverse = xboxController.getPOV() > 135 && xboxController.getPOV() < 225;
+            manualIntake = xboxController.getAButton() && goliathForward;
         }
 
         if (joystickController != null) {
@@ -135,6 +137,9 @@ public class InputSubsystem extends SubsystemBase {
             resetArm = resetArm || joystickController.getRawButton(4);
             goliathForward = goliathForward || joystickController.getRawButton(9);
             goliathReverse = goliathReverse || joystickController.getRawButton(11);
+
+            this.debugCommandJointForward = false;
+            this.debugCommandJointBackwards = false;
         }
 
         if (!clawMode) {
@@ -236,27 +241,21 @@ public class InputSubsystem extends SubsystemBase {
     public boolean getGoliathReverseButton() {
         return goliathReverse;
     }
- 
-    /**
-     * The Goliath intake at the end of the claw is controlled by two roller
-     * motors that spin in opposite directions.  Anything caught between them
-     * can either be taken up (intake) or released (outtake.)
-     * 
-     * <p>This function returns a single number that determines the roller
-     * speed.  If that number is positive, that represents claw intake; 
-     * negative values represent claw outtake.</p>
-     * @return A number between -1.0 and 1.0 (inclusive.)
-     */
-    public double getGoliathSpeed() {
-        return goliathSpeed;
-    } 
 
     /**
      * Used when the user wants fine grain control over the intake.
-     * @return
+     * @return 
      */
     public boolean manualIntake() {
         return manualIntake;
+    }
+    
+    public boolean getDebugCommandJointForward() {
+        return debugCommandJointForward;
+    }
+
+    public boolean getDebugCommandJointBackwards() {
+        return debugCommandJointBackwards;
     }
     
     public void rumbleXbox() {

@@ -12,7 +12,10 @@ import frc.robot.subsystems.InputSubsystem;
 import frc.robot.subsystems.VroomSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -24,7 +27,7 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
 
-  private final ExampleCommand m_autoCommand = new ExampleCommand(m_exampleSubsystem);
+  private Command m_autoCommand = new ExampleCommand(m_exampleSubsystem);
 
   private VroomSubsystem driveSubsystem;
   private InputSubsystem inputSubsystem;
@@ -45,6 +48,17 @@ public class RobotContainer {
       
 
     }, inputSubsystem));
+
+    m_autoCommand = new ParallelDeadlineGroup(
+      new WaitCommand(Constants.AUTON_BACKWARD_TIME_SECONDS), 
+      new InstantCommand(() -> {
+        // Start moving backward.
+        driveSubsystem.setSimpleDrive(-1, 0, 0);
+      })
+    ).andThen(new InstantCommand(() -> {
+      // Stop moving.
+      driveSubsystem.setSimpleDrive(0, 0, 0);
+    }));
   
   }
 
@@ -67,10 +81,10 @@ public class RobotContainer {
   }
 
   public void enableAutonomous() {
-    driveSubsystem.setAutonomous(true);
+    driveSubsystem.setAutonomousType(VroomSubsystem.AutonomousType.SIMPLE);
   }
   
   public void disableAutonomous() {
-    driveSubsystem.setAutonomous(false);
+    driveSubsystem.setAutonomousType(VroomSubsystem.AutonomousType.TELEOP);
   }
 }
