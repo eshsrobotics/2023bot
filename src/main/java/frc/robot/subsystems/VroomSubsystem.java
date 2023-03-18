@@ -40,20 +40,26 @@ public class VroomSubsystem extends SubsystemBase {
     private CANSparkMax backLeft;
     private CANSparkMax frontRight;
     private CANSparkMax frontLeft;
+    private double frontLeftEncoderCount;
+    private double frontRightEncoderCount;
+    private double backLeftEncoderCount;
+    private double backRightEncoderCount;
 
     /**
-     * In order to make a drive with four Mecanum wheels go _vroom_, you need to apply the
-     * Mecanum formula to calculate all four wheel speeds.  Fortunately, WPILib has a handy
+     * In order to make a drive with four Mecanum wheels go _vroom_, you need to
+     * apply the
+     * Mecanum formula to calculate all four wheel speeds. Fortunately, WPILib has a
+     * handy
      * class we can use to do this already.
      * 
-     * This class is _only_ used to drive during teleop.  During autonomous, we use a
+     * This class is _only_ used to drive during teleop. During autonomous, we use a
      * {@link HolonomicDriveController} instead.
      */
     private MecanumDrive drive;
 
-
     /**
-     * {@link MecanumDriveKinematics} converts {@link ChassisSpeeds} to a {@link MecanumDriveWheelSpeeds}
+     * {@link MecanumDriveKinematics} converts {@link ChassisSpeeds} to a
+     * {@link MecanumDriveWheelSpeeds}
      */
     private MecanumDriveKinematics kinematics;
 
@@ -66,21 +72,38 @@ public class VroomSubsystem extends SubsystemBase {
      * Keeps track of the robot's rotation since the last call to {@link #reset()}.
      */
     private ADXRS450_Gyro gyro;
-    
+
     private PIDController frontBackPidController;
     private PIDController leftRightPidController;
     private ProfiledPIDController profiledRotationPidController;
-    
+
     /**
-     * {@link HolonomicDriveController} converts a trajectory into {@link ChassisSpeeds}
+     * {@link HolonomicDriveController} converts a trajectory into
+     * {@link ChassisSpeeds}
      */
     private HolonomicDriveController autonomousController;
 
+    public enum AutonomousType {
+        // Auton does nothing.
+        NONE,
+        // Auton drives in one direction.
+        SIMPLE,
+        // Auton follows a complex path.
+        TRAJECTORY,
+        // User has control of the robot.
+        TELEOP
+    }
+
     /**
-     * Used to determine if the robot is currently in the autonomous phase of
-     * the game
+     * Used to determine what type of autonomous the robot is will use in the
+     * autonomous phase of
+     * the game.
      */
-    private boolean isAutonomous;
+    private AutonomousType autonomousType;
+
+    private double simpleFrontBack;
+    private double simpleLeftRight;
+    private double simpleRotation;
 
     /**
      * Used to get the values of the Xbox controller joysticks (left joystick
@@ -90,20 +113,20 @@ public class VroomSubsystem extends SubsystemBase {
     private InputSubsystem inputSubsystem;
 
     /**
-     * Takes the robots pose at different moments along the autonomus path. 
+     * Takes the robots pose at different moments along the autonomus path.
      */
-    private Trajectory trajectory; 
+    private Trajectory trajectory;
 
     /**
      * Represents the time in seconds when our autonomous trajectory started
      */
     private double trajectoryTimeSecondsStart;
 
-    /** 
+    /**
      * Represents the gyro angle at the start of autonomous
      */
     private Rotation2d orientationAtStart;
-    
+
     private ShuffleboardDebug debug;
 
     /**
@@ -116,27 +139,38 @@ public class VroomSubsystem extends SubsystemBase {
         frontRight.setInverted(true);
         backLeft = new CANSparkMax(Constants.BACK_LEFT_CAN_ID, MotorType.kBrushed);
         frontLeft = new CANSparkMax(Constants.FRONT_LEFT_CAN_ID, MotorType.kBrushed);
+        frontLeftEncoderCount = 0;
+        frontRightEncoderCount = 0;
+        backLeftEncoderCount = 0;
+        backRightEncoderCount = 0;
         drive = new MecanumDrive(frontLeft, backLeft, frontRight, backRight);
-        kinematics = new MecanumDriveKinematics(new Translation2d(-Constants.CHASSIS_WIDTH_INCHES / 2, Constants.CHASSIS_LENGTH_INCHES / 2),
-                                                new Translation2d(Constants.CHASSIS_WIDTH_INCHES / 2, Constants.CHASSIS_LENGTH_INCHES / 2),
-                                                new Translation2d(-Constants.CHASSIS_WIDTH_INCHES / 2, -Constants.CHASSIS_LENGTH_INCHES / 2),
-                                                new Translation2d(Constants.CHASSIS_WIDTH_INCHES / 2, -Constants.CHASSIS_LENGTH_INCHES / 2));
+        kinematics = new MecanumDriveKinematics(
+                new Translation2d(-Constants.CHASSIS_WIDTH_INCHES / 2, Constants.CHASSIS_LENGTH_INCHES / 2),
+                new Translation2d(Constants.CHASSIS_WIDTH_INCHES / 2, Constants.CHASSIS_LENGTH_INCHES / 2),
+                new Translation2d(-Constants.CHASSIS_WIDTH_INCHES / 2, -Constants.CHASSIS_LENGTH_INCHES / 2),
+                new Translation2d(Constants.CHASSIS_WIDTH_INCHES / 2, -Constants.CHASSIS_LENGTH_INCHES / 2));
 
-        // TODO: Make sure that gyro is stabilized before calling differentialDriveOdometery.
+        // TODO: Make sure that gyro is stabilized before calling
+        // differentialDriveOdometery.
         gyro = new ADXRS450_Gyro();
         mecanumDriveOdometry = new MecanumDriveOdometry(kinematics, gyro.getRotation2d(), getEncodersDistanceMeters());
-        frontBackPidController = new PIDController(Constants.P_FRONT_BACK, Constants.I_FRONT_BACK, Constants.D_FRONT_BACK);
-        leftRightPidController = new PIDController(Constants.P_LEFT_RIGHT, Constants.I_LEFT_RIGHT, Constants.D_LEFT_RIGHT);
+        frontBackPidController = new PIDController(Constants.P_FRONT_BACK, Constants.I_FRONT_BACK,
+                Constants.D_FRONT_BACK);
+        leftRightPidController = new PIDController(Constants.P_LEFT_RIGHT, Constants.I_LEFT_RIGHT,
+                Constants.D_LEFT_RIGHT);
         profiledRotationPidController = new ProfiledPIDController(Constants.P_PROFILED_ROTATION,
-                                                                 Constants.I_PROFILED_ROTATION,
-                                                                 Constants.D_PROFILED_ROTATION, 
-                                                                 new Constraints(Constants.MAXIMUM_VELOCITY_INCHES_PER_SECOND,
-                                                                                 Constants.MAXIMUM_ACCELERATION_INCHES_PER_SECOND_SQUARED));
-        autonomousController = new HolonomicDriveController(leftRightPidController, 
-                                                            frontBackPidController, 
-                                                            profiledRotationPidController);
-        isAutonomous = false;
-        
+                Constants.I_PROFILED_ROTATION,
+                Constants.D_PROFILED_ROTATION,
+                new Constraints(Constants.MAXIMUM_VELOCITY_INCHES_PER_SECOND,
+                        Constants.MAXIMUM_ACCELERATION_INCHES_PER_SECOND_SQUARED));
+        autonomousController = new HolonomicDriveController(leftRightPidController,
+                frontBackPidController,
+                profiledRotationPidController);
+        autonomousType = AutonomousType.TELEOP;
+        simpleFrontBack = 0;
+        simpleLeftRight = 0;
+        simpleRotation = 0;
+
         this.inputSubsystem = inputSubsystem;
 
         this.debug = debug;
@@ -147,18 +181,36 @@ public class VroomSubsystem extends SubsystemBase {
             trajectory = TrajectoryUtil.fromPathweaverJson(Path.of(Constants.AUTONOMOUS_JSON_PATH));
         } catch (IOException e) {
             trajectory = null;
-            System.out.format("Caught IOException while opening '%s': %s\n", 
-                Constants.AUTONOMOUS_JSON_PATH,
-                e.getMessage());
+            System.out.format("Caught IOException while opening '%s': %s\n",
+                    Constants.AUTONOMOUS_JSON_PATH,
+                    e.getMessage());
             e.printStackTrace();
         }
     }
 
-    
-    public void setAutonomous(boolean a) {
-        isAutonomous = a;
+    public void setAutonomousType(AutonomousType a) {
+        autonomousType = a;
         trajectoryTimeSecondsStart = Timer.getFPGATimestamp();
-    } 
+    }
+
+    /**
+     * Determines how the mecanum drive will function during simple autonomous.
+     * All parameters range from -1 to 1.
+     * 
+     * @param frontBack determines how fast we travel across the forward axis; 0
+     * stops, and negative numbers travel backwards.
+     * @param leftRight determines how fast we travel across the horizontal
+     * axis; 0 means no side step, and a negative number means a sidestep to
+     * the left. 
+     * @param rotation determine how much to rotate; 0 means no rotation, and a
+     * negative number means it will spin counter clockwise. 
+     * 
+     */
+    public void setSimpleDrive(double frontBack, double leftRight, double rotation) {
+        simpleFrontBack = frontBack;
+        simpleLeftRight = leftRight;
+        simpleRotation = rotation;
+    }
     /**
      * Resets the starting position of the robot to be (0, 0). Call this during the
      * beginning of a match right before autonomous, por favor.
@@ -172,10 +224,12 @@ public class VroomSubsystem extends SubsystemBase {
     }
 
     /**
-     * A essential prerequisite for the {@link MecanumDriveOdometry}, this function 
+     * A essential prerequisite for the {@link MecanumDriveOdometry}, this function
      * returns the total distance the wheels have traveled in meters.
      * 
-     * <p>TODO: These values are fake, replace when we get encoders.</p>
+     * <p>
+     * TODO: These values are fake, replace when we get encoders.
+     * </p>
      * 
      * @return Four encoder-measured distances.
      */
@@ -184,53 +238,84 @@ public class VroomSubsystem extends SubsystemBase {
         return result;
     }
 
+    private void driftDetection() {
+        // We don't know know if this is the true clicks per revolution for the
+        // E4T encoders, this value is assumed.
+        final int CLICKS_PER_REVOLUTION = 4096;
+
+        var blEncoder = backLeft.getAlternateEncoder(CLICKS_PER_REVOLUTION);
+        var brEncoder = backRight.getAlternateEncoder(CLICKS_PER_REVOLUTION);
+        var flEncoder = frontLeft.getAlternateEncoder(CLICKS_PER_REVOLUTION);
+        var frEncoder = frontRight.getAlternateEncoder(CLICKS_PER_REVOLUTION);
+
+        double bl = blEncoder.getPosition();
+        double br = brEncoder.getPosition();
+        double fl = flEncoder.getPosition();
+        double fr = frEncoder.getPosition();
+    }
+
     @Override
     public void periodic() {
         // TODO Auto-generated method stubs
         super.periodic();
         mecanumDriveOdometry.update(gyro.getRotation2d(), getEncodersDistanceMeters());
         System.out.println("periodic activated");
-        if (isAutonomous) {
-            // Autonomous runs HERE
-            // Checking that we have a trajectory loaded
-            double elapsedAutonTimeSeconds = Timer.getFPGATimestamp() - trajectoryTimeSecondsStart;
-            if (trajectory != null &&  elapsedAutonTimeSeconds <= trajectory.getTotalTimeSeconds()) {
-                // This Code assumes we never want to rotate the robot relative to the field during autonomous
-                Trajectory.State state = trajectory.sample(elapsedAutonTimeSeconds);
-                ChassisSpeeds cs = autonomousController.calculate(mecanumDriveOdometry.getPoseMeters(), 
-                                                                  state, 
-                                                                  orientationAtStart);
-                MecanumDriveWheelSpeeds mdws = kinematics.toWheelSpeeds(cs);
-                double flPower = MathUtil.clamp(mdws.frontLeftMetersPerSecond / Constants.MAXIMUM_VELOCITY_METERS_PER_SECOND, -1.0, 1.0);
-                double frPower = MathUtil.clamp(mdws.frontRightMetersPerSecond / Constants.MAXIMUM_VELOCITY_METERS_PER_SECOND, -1.0, 1.0);
-                double blPower = MathUtil.clamp(mdws.rearLeftMetersPerSecond / Constants.MAXIMUM_VELOCITY_METERS_PER_SECOND, -1.0, 1.0);
-                double brPower = MathUtil.clamp(mdws.rearRightMetersPerSecond / Constants.MAXIMUM_VELOCITY_METERS_PER_SECOND, -1.0, 1.0);
-                frontLeft.set(flPower);
-                frontRight.set(frPower);
-                backLeft.set(blPower);
-                backRight.set(brPower);
-            }
-        } else {
-            // Teleop runs here
-            // Field-oriented mecanum
-            
+        switch (autonomousType) {
+            case NONE:
+                break;
+            case SIMPLE:
+                drive.driveCartesian(simpleFrontBack,
+                                     simpleLeftRight,
+                                     simpleRotation);
+                break;
+            case TRAJECTORY:
+                // Checking that we have a trajectory loaded
+                double elapsedAutonTimeSeconds = Timer.getFPGATimestamp() - trajectoryTimeSecondsStart;
+                if (trajectory != null && elapsedAutonTimeSeconds <= trajectory.getTotalTimeSeconds()) {
+                    // This Code assumes we never want to rotate the robot relative to the field
+                    // during autonomous
+                    Trajectory.State state = trajectory.sample(elapsedAutonTimeSeconds);
+                    ChassisSpeeds cs = autonomousController.calculate(mecanumDriveOdometry.getPoseMeters(),
+                            state,
+                            orientationAtStart);
+                    MecanumDriveWheelSpeeds mdws = kinematics.toWheelSpeeds(cs);
+                    double flPower = MathUtil.clamp(
+                            mdws.frontLeftMetersPerSecond / Constants.MAXIMUM_VELOCITY_METERS_PER_SECOND, -1.0, 1.0);
+                    double frPower = MathUtil.clamp(
+                            mdws.frontRightMetersPerSecond / Constants.MAXIMUM_VELOCITY_METERS_PER_SECOND, -1.0, 1.0);
+                    double blPower = MathUtil.clamp(
+                            mdws.rearLeftMetersPerSecond / Constants.MAXIMUM_VELOCITY_METERS_PER_SECOND, -1.0, 1.0);
+                    double brPower = MathUtil.clamp(
+                            mdws.rearRightMetersPerSecond / Constants.MAXIMUM_VELOCITY_METERS_PER_SECOND, -1.0, 1.0);
+                    frontLeft.set(flPower);
+                    frontRight.set(frPower);
+                    backLeft.set(blPower);
+                    backRight.set(brPower);
+                }
+                break;
+            case TELEOP:
+                // Teleop runs here
 
-            drive.driveCartesian(inputSubsystem.getFrontBack(),
-                                 inputSubsystem.getLeftRight(),
-                                 inputSubsystem.getRotation());
+                drive.driveCartesian(inputSubsystem.getFrontBack(),
+                        inputSubsystem.getLeftRight(),
+                        inputSubsystem.getRotation());
 
-            var wheelSpeeds = MecanumDrive.driveCartesianIK(inputSubsystem.getFrontBack(),
-                                 inputSubsystem.getLeftRight(),
-                                 inputSubsystem.getRotation());
-            
-            debug.frontLeft.setDouble(wheelSpeeds.frontLeft);
-            debug.frontRight.setDouble(wheelSpeeds.frontRight);
-            debug.backLeft.setDouble(wheelSpeeds.rearLeft);
-            debug.backRight.setDouble(wheelSpeeds.rearRight);
-            
-            drive.setExpiration(.1);
-            drive.feed();
+                var wheelSpeeds = MecanumDrive.driveCartesianIK(inputSubsystem.getFrontBack(),
+                        inputSubsystem.getLeftRight(),
+                        inputSubsystem.getRotation());
+
+                debug.frontLeft.setDouble(wheelSpeeds.frontLeft);
+                debug.frontRight.setDouble(wheelSpeeds.frontRight);
+                debug.backLeft.setDouble(wheelSpeeds.rearLeft);
+                debug.backRight.setDouble(wheelSpeeds.rearRight);
+
+                // In order to measure drift, we will use the actual velocities and
+                // feeding those into driveCartesianIK
+                // kinematics.toChassisSpeeds()
+
+                drive.setExpiration(.1);
+                drive.feed();
+                break;
         }
     }
 }
-   
