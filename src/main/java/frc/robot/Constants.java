@@ -30,7 +30,7 @@ public final class Constants {
      */
     public final static int BACK_LEFT_CAN_ID = 1;
     public final static int FRONT_LEFT_CAN_ID = 6;
-    public final static int FRONT_RIGHT_CAN_ID = 9;
+    public final static int FRONT_RIGHT_CAN_ID = 7;
     public final static int BACK_RIGHT_CAN_ID = 5;
 
     /**
@@ -165,7 +165,7 @@ public final class Constants {
     /**
      * The CAN IDs for the arm and wrist motors.
      */
-    public final static int SHOULDER_MOTOR_CAN_ID = 0;
+    public final static int SHOULDER_MOTOR_CAN_ID = 18;
     public final static int ELBOW_MOTOR_CAN_ID = 0;
     public final static int WRIST_MOTOR_CAN_ID = 0;
     public final static int RIGHT_WRIST_ROLLER_CAN_ID = 0;

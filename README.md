@@ -14,9 +14,10 @@ that have not been verified to work over CAN or PWM.
 | Motor name | Device | Port (type) | Notes |
 | --- | --- | --- | --- |
 | Front left wheel | Spark MAX | 6 (CAN) | Label: **G** (tested, works) |
-| Front right wheel | Spark MAX | 9 (CAN) | Label: **J** (tested, works) |
-| Back right wheel | Spark MAX | 5 (CAN) | Label: **E** (untested, works) |
+| Front right wheel | Spark MAX | 7 (CAN) | Label: **Z** (tested, works) |
+| Back right wheel | Spark MAX | 5 (CAN) | Label: **A** (tested, works) |
 | Back left wheel | Spark MAX | 1 (CAN) | Label: **B** (tested, works) |
+| Shoulder motor | Spark MAX | 12 (CAN) | Label: **P** (tested, works) |
 
 ## Control scheme
 - Field-oriented Mecanum drive — The robot's forward is away from the driver,
