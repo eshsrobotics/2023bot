@@ -40,9 +40,11 @@ public class WristSubsystem extends SubsystemBase {
             (wristDown && !wristUp && currentAngle > Constants.WRIST_MAX_ANGLE)) {
             input.rumbleXbox();
         } else {
-            if (wristUp && !wristDown) {
+            if (wristUp && !wristDown && !passedMin) {
+                // Move wrist up
                 wristMotor.set(Constants.WRIST_MOTOR_SPEED);
             } else if (wristDown && !wristUp) {
+                // Move wrist down
                 wristMotor.set(-Constants.WRIST_MOTOR_SPEED);
             } else {
                 wristMotor.stopMotor();
