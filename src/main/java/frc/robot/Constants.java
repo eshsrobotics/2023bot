@@ -168,8 +168,8 @@ public final class Constants {
     public final static int SHOULDER_MOTOR_CAN_ID = 0;
     public final static int ELBOW_MOTOR_CAN_ID = 0;
     public final static int WRIST_MOTOR_CAN_ID = 12;
-    public final static int RIGHT_WRIST_ROLLER_CAN_ID = 3;
-    public final static int LEFT_WRIST_ROLLER_CAN_ID = 4;
+    public final static int RIGHT_WRIST_ROLLER_CAN_ID = 2;
+    public final static int LEFT_WRIST_ROLLER_CAN_ID = 9;
 
     /**
      * The expected starting angles for the arm motors.

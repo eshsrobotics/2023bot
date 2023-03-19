@@ -18,8 +18,8 @@ that have not been verified to work over CAN or PWM.
 | Back right wheel | Spark MAX | 5 (CAN) | Label: **A** (tested, works) |
 | Back left wheel | Spark MAX | 1 (CAN) | Label: **B** (tested, works) |
 | Wrist motor | Spark MAX | 12 (CAN) | Label: **P** (tested, works) |
-| Left roller motor | Spark MAX | 4 (CAN) | Label: **D** (tested, works) |
-| Right roller motor | Spark MAX | 3 (CAN) | Label: **H** (tested, works) |
+| Left roller motor | Spark MAX | 9 (CAN) | Label: **J** (tested, works) |
+| Right roller motor | Spark MAX | 2 (CAN) | Label: **N** (tested, works) |
 
 ## Control scheme
 - The only controller is an Xbox controller 
