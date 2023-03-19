@@ -165,9 +165,9 @@ public final class Constants {
     /**
      * The CAN IDs for the arm and wrist motors.
      */
-    public final static int SHOULDER_MOTOR_CAN_ID = 18;
+    public final static int SHOULDER_MOTOR_CAN_ID = 0;
     public final static int ELBOW_MOTOR_CAN_ID = 0;
-    public final static int WRIST_MOTOR_CAN_ID = 0;
+    public final static int WRIST_MOTOR_CAN_ID = 18;
     public final static int RIGHT_WRIST_ROLLER_CAN_ID = 0;
     public final static int LEFT_WRIST_ROLLER_CAN_ID = 0;
 
@@ -187,15 +187,18 @@ public final class Constants {
      */
     public final static double SHOULDER_START_ANGLE = 55;
     public final static double ELBOW_START_ANGLE = 180 + 125;
-    public final static double WRIST_START_ANGLE = -90;
+    public final static double WRIST_START_ANGLE = 0;
 
     public final static double SHOULDER_MAX_ANGLE = 180;
     public final static double ELBOW_MAX_ANGLE = 0;
-    public final static double WRIST_MAX_ANGLE = 160;
+    // TODO: This is too high, we need to actually measure the correct angle
+    public final static double WRIST_MAX_ANGLE = 180;
 
     public final static double SHOULDER_MIN_ANGLE = 26;
     public final static double ELBOW_MIN_ANGLE = -130;
-    public final static double WRIST_MIN_ANGLE = -160;
+    // The wrist starts at 0, but once it crosses this angle, it can't pass it
+    // again
+    public final static double WRIST_MIN_ANGLE = 5;
     /**
      * The gear ratios for the shoulder, elbow, and wrist motors
      * 
@@ -204,7 +207,7 @@ public final class Constants {
      */
     public final static double SHOULDER_GEAR_RATIO = 26 / 60;
     public final static double ELBOW_GEAR_RATIO = 32 / 56;
-    public final static double WRIST_GEAR_RATIO = 1;
+    public final static double WRIST_GEAR_RATIO = 80;
 
     // TODO: Find actual conversion factors
     /**

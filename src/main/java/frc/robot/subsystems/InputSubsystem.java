@@ -39,6 +39,8 @@ public class InputSubsystem extends SubsystemBase {
     private boolean manualIntake = false;
     private boolean debugCommandJointForward = false;
     private boolean debugCommandJointBackwards = false;
+    private boolean wristUp = false;
+    private boolean wristDown = false;
     private ShuffleboardDebug debug;
 
     public InputSubsystem(ShuffleboardDebug debug) {
@@ -89,54 +91,61 @@ public class InputSubsystem extends SubsystemBase {
             xboxLeftRight = xboxController.getLeftX();
             xboxRotation = xboxController.getRightX();
 
-            if (xboxController.getRightBumper()) {
-                // If right bumper is pressed, we are moving the arm away from
-                // the robot
-                xboxArmX = 1;
-            } else if (xboxController.getLeftBumper()) {
-                // If left bumper is pressed, we move the arm towards the robot
-                xboxArmX = -1;
-            }
+            // if (xboxController.getRightBumper()) {
+            //     // If right bumper is pressed, we are moving the arm away from
+            //     // the robot
+            //     xboxArmX = 1;
+            // } else if (xboxController.getLeftBumper()) {
+            //     // If left bumper is pressed, we move the arm towards the robot
+            //     xboxArmX = -1;
+            // }
 
-            if (xboxController.getBButtonPressed()) {
-                // Control claw intake and outake.
-                goliathSpeed = xboxController.getRightTriggerAxis() - 
-                    xboxController.getLeftTriggerAxis();
-            } else {
-                // Control the arm y as normal.
-                if (xboxController.getRightTriggerAxis() > Constants.DEADZONE) {
-                    // if right trigger is pressed, we move the arm up
-                    xboxArmY = 1;
-                } else if (xboxController.getLeftTriggerAxis() > Constants.DEADZONE) {
-                    // if left trigger is pressed, we move the arm down
-                    xboxArmY = -1;
-                }
-            }
+            // if (xboxController.getBButtonPressed()) {
+            //     // Control claw intake and outake.
+            //     goliathSpeed = xboxController.getRightTriggerAxis() - 
+            //         xboxController.getLeftTriggerAxis();
+            // } else {
+            //     // Control the arm y as normal.
+            //     if (xboxController.getRightTriggerAxis() > Constants.DEADZONE) {
+            //         // if right trigger is pressed, we move the arm up
+            //         xboxArmY = 1;
+            //     } else if (xboxController.getLeftTriggerAxis() > Constants.DEADZONE) {
+            //         // if left trigger is pressed, we move the arm down
+            //         xboxArmY = -1;
+            //     }
+            // }
             
-            highGoal = xboxController.getYButton();
-            lowGoal = xboxController.getXButton();
-            // D-pad left
-            floor = xboxController.getPOV() > 225 && xboxController.getPOV() < 315;
-            resetArm = xboxController.getBButton();
-            // D-pad up
-            goliathForward = xboxController.getPOV() > -45 && xboxController.getPOV() < 45;
-            // D-pad down
-            goliathReverse = xboxController.getPOV() > 135 && xboxController.getPOV() < 225;
+            // highGoal = xboxController.getYButton();
+            // lowGoal = xboxController.getXButton();
+            // // D-pad left
+            // floor = xboxController.getPOV() > 225 && xboxController.getPOV() < 315;
+            // resetArm = xboxController.getBButton();
+            // // D-pad up
+            // goliathForward = xboxController.getPOV() > -45 && xboxController.getPOV() < 45;
+            // // D-pad down
+            // goliathReverse = xboxController.getPOV() > 135 && xboxController.getPOV() < 225;
+            // manualIntake = xboxController.getAButton() && goliathForward;
+
+            wristUp = xboxController.getRightBumper();
+            wristDown = xboxController.getRightTriggerAxis() > Constants.DEADZONE;
+
+            goliathForward = xboxController.getLeftBumper();
+            goliathReverse = xboxController.getLeftTriggerAxis() > Constants.DEADZONE;
             manualIntake = xboxController.getAButton() && goliathForward;
         }
 
         if (joystickController != null) {
-            joystickFrontBack = joystickController.getY();
-            joystickLeftRight = joystickController.getX();
-            joystickRotation = joystickController.getZ();
-            clawMode = joystickController.getTrigger();
-            jHat = joystickController.getPOV();
-            highGoal = highGoal || joystickController.getRawButton(5);
-            lowGoal = lowGoal || joystickController.getRawButton(3);
-            floor = floor || joystickController.getRawButton(6);
-            resetArm = resetArm || joystickController.getRawButton(4);
-            goliathForward = goliathForward || joystickController.getRawButton(9);
-            goliathReverse = goliathReverse || joystickController.getRawButton(11);
+            // joystickFrontBack = joystickController.getY();
+            // joystickLeftRight = joystickController.getX();
+            // joystickRotation = joystickController.getZ();
+            // clawMode = joystickController.getTrigger();
+            // jHat = joystickController.getPOV();
+            // highGoal = highGoal || joystickController.getRawButton(5);
+            // lowGoal = lowGoal || joystickController.getRawButton(3);
+            // floor = floor || joystickController.getRawButton(6);
+            // resetArm = resetArm || joystickController.getRawButton(4);
+            // goliathForward = goliathForward || joystickController.getRawButton(9);
+            // goliathReverse = goliathReverse || joystickController.getRawButton(11);
 
             this.debugCommandJointForward = false;
             this.debugCommandJointBackwards = false;
@@ -240,6 +249,14 @@ public class InputSubsystem extends SubsystemBase {
 
     public boolean getGoliathReverseButton() {
         return goliathReverse;
+    }
+
+    public boolean getWristUp() {
+        return wristUp;
+    }
+
+    public boolean getWristDown() {
+        return wristDown;
     }
 
     /**
