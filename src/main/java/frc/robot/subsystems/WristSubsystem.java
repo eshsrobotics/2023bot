@@ -31,7 +31,23 @@ public class WristSubsystem extends SubsystemBase {
         super.periodic();
         double currentInputAngleDegrees = encoder.getPosition();
         currentAngle = currentInputAngleDegrees / Constants.WRIST_GEAR_RATIO;
-
+        if (currentAngle > Constants.WRIST_MIN_ANGLE) {
+            passedMin = true;
+        }
+        boolean wristUp = input.getWristUp();
+        boolean wristDown = input.getWristDown();
+        if ((wristUp && !wristDown && currentAngle < Constants.WRIST_MIN_ANGLE) ||
+            (wristDown && !wristUp && currentAngle > Constants.WRIST_MAX_ANGLE)) {
+            input.rumbleXbox();
+        } else {
+            if (wristUp && !wristDown) {
+                wristMotor.set(Constants.WRIST_MOTOR_SPEED);
+            } else if (wristDown && !wristUp) {
+                wristMotor.set(-Constants.WRIST_MOTOR_SPEED);
+            } else {
+                wristMotor.stopMotor();
+            }
+        }
     }
     
 }

@@ -7,9 +7,11 @@ package frc.robot;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.ExampleCommand;
+import frc.robot.subsystems.ClawSubsystem;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.InputSubsystem;
 import frc.robot.subsystems.VroomSubsystem;
+import frc.robot.subsystems.WristSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -32,6 +34,8 @@ public class RobotContainer {
   private VroomSubsystem driveSubsystem;
   private InputSubsystem inputSubsystem;
   private ShuffleboardDebug shuffleboardDebug;
+  private ClawSubsystem clawSubsystem;
+  private WristSubsystem wristSubsystem;
 
   private Command teleopCompositeCommand;
 
@@ -42,6 +46,8 @@ public class RobotContainer {
     shuffleboardDebug = new ShuffleboardDebug();
     inputSubsystem = new InputSubsystem(shuffleboardDebug);
     driveSubsystem  = new VroomSubsystem(inputSubsystem, shuffleboardDebug);
+    clawSubsystem = new ClawSubsystem(inputSubsystem, shuffleboardDebug);
+    wristSubsystem = new WristSubsystem(inputSubsystem);
     
     teleopCompositeCommand = new RepeatCommand(new InstantCommand(() -> {
       // This repeat command dispatches other commands and then exits

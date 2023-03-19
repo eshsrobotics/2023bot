@@ -167,9 +167,9 @@ public final class Constants {
      */
     public final static int SHOULDER_MOTOR_CAN_ID = 0;
     public final static int ELBOW_MOTOR_CAN_ID = 0;
-    public final static int WRIST_MOTOR_CAN_ID = 18;
-    public final static int RIGHT_WRIST_ROLLER_CAN_ID = 0;
-    public final static int LEFT_WRIST_ROLLER_CAN_ID = 0;
+    public final static int WRIST_MOTOR_CAN_ID = 12;
+    public final static int RIGHT_WRIST_ROLLER_CAN_ID = 3;
+    public final static int LEFT_WRIST_ROLLER_CAN_ID = 4;
 
     /**
      * The expected starting angles for the arm motors.
@@ -260,4 +260,9 @@ public final class Constants {
     public final static double MAXIMUM_ROTATION_TIME_SECONDS = MINIMUM_ROTATION_TIME_SECONDS + 5;
 
     public final static double AUTON_BACKWARD_TIME_SECONDS = 0.75;
+
+    /**
+     * The speed that the wrist motor will move
+     */
+    public final static double WRIST_MOTOR_SPEED = 0.25;
 } 
