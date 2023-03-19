@@ -256,5 +256,5 @@ public final class Constants {
      */
     public final static double MAXIMUM_ROTATION_TIME_SECONDS = MINIMUM_ROTATION_TIME_SECONDS + 5;
 
-    public final static double AUTON_BACKWARD_TIME_SECONDS = 2.0;
+    public final static double AUTON_BACKWARD_TIME_SECONDS = 0.75;
 } 

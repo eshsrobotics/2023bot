@@ -24,6 +24,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
+import edu.wpi.first.wpilibj.drive.DifferentialDrive.WheelSpeeds;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -44,6 +45,7 @@ public class VroomSubsystem extends SubsystemBase {
     private double frontRightEncoderCount;
     private double backLeftEncoderCount;
     private double backRightEncoderCount;
+    private double lastGyroDegrees;
 
     /**
      * In order to make a drive with four Mecanum wheels go _vroom_, you need to
@@ -143,6 +145,7 @@ public class VroomSubsystem extends SubsystemBase {
         frontRightEncoderCount = 0;
         backLeftEncoderCount = 0;
         backRightEncoderCount = 0;
+        lastGyroDegrees = 0;
         drive = new MecanumDrive(frontLeft, backLeft, frontRight, backRight);
         kinematics = new MecanumDriveKinematics(
                 new Translation2d(-Constants.CHASSIS_WIDTH_INCHES / 2, Constants.CHASSIS_LENGTH_INCHES / 2),
@@ -238,7 +241,28 @@ public class VroomSubsystem extends SubsystemBase {
         return result;
     }
 
-    private void driftDetection() {
+    /**
+     * Detect how much the robot has rotationally drifted compared to its
+     * expected heading.
+     *
+     * A lot of this is theoretical, but if we measure the number of encoder
+     * clicks per second on all of the drive wheels, we can treat those as
+     * 'velocities' and make a {@link MecanumDriveWheelSpeeds} out of it.  This
+     * can easily be converted into a {@link ChassisSpeeds} which we can compare
+     * to our gyro angle.  Any measured difference should rerepsent degree drift
+     * -- a spontaneous change in heading brought about by differences in wheel
+     * rotation speeds.
+     *
+     * @param inputFrontBack The front-back channel coming from human input, in
+     * the range -1..1.
+     * @param inputLeftRight The left-right channel coming from human input, in
+     * the range -1..1.
+     * @param inputRotation The rotation channel coming from human input, in the
+     * range -1..1.
+     * @return Returns the drive's estimated drift in degrees during the most
+     * recent iteration of {@link #periodic()}.
+     */
+    private double driftDetection(double inputFrontBack, double inputLeftRight, double inputRotation) {
         // We don't know know if this is the true clicks per revolution for the
         // E4T encoders, this value is assumed.
         final int CLICKS_PER_REVOLUTION = 4096;
@@ -248,15 +272,36 @@ public class VroomSubsystem extends SubsystemBase {
         var flEncoder = frontLeft.getAlternateEncoder(CLICKS_PER_REVOLUTION);
         var frEncoder = frontRight.getAlternateEncoder(CLICKS_PER_REVOLUTION);
 
+        final double PERIODIC_FREQUENCY_HZ = 50;
+
         double bl = blEncoder.getPosition();
         double br = brEncoder.getPosition();
         double fl = flEncoder.getPosition();
         double fr = frEncoder.getPosition();
+
+        double blCPS = (bl - backLeftEncoderCount) * PERIODIC_FREQUENCY_HZ;
+        double brCPS = (br - backRightEncoderCount) * PERIODIC_FREQUENCY_HZ;
+        double flCPS = (fl - frontLeftEncoderCount) * PERIODIC_FREQUENCY_HZ;
+        double frCPS = (fr - frontRightEncoderCount) * PERIODIC_FREQUENCY_HZ;
+
+        MecanumDriveWheelSpeeds speeds = new MecanumDriveWheelSpeeds(flCPS, frCPS, blCPS, brCPS);
+
+        ChassisSpeeds chassisSpeeds = kinematics.toChassisSpeeds(speeds);
+
+        double deltaRadians = chassisSpeeds.omegaRadiansPerSecond / PERIODIC_FREQUENCY_HZ;
+        double drift = deltaRadians - (gyro.getAngle() - lastGyroDegrees);
+
+        backLeftEncoderCount = bl;
+        backRightEncoderCount = br;
+        frontLeftEncoderCount = fl;
+        frontRightEncoderCount = fr;
+        lastGyroDegrees = gyro.getAngle();
+
+        return drift;
     }
 
     @Override
     public void periodic() {
-        // TODO Auto-generated method stubs
         super.periodic();
         mecanumDriveOdometry.update(gyro.getRotation2d(), getEncodersDistanceMeters());
         System.out.println("periodic activated");
@@ -264,8 +309,10 @@ public class VroomSubsystem extends SubsystemBase {
             case NONE:
                 break;
             case SIMPLE:
-                drive.driveCartesian(simpleFrontBack,
-                                     simpleLeftRight,
+                // The 'simple' auton drives in a single direction.  If that
+                // direction is frontBack=leftRight=rotations=0, the drive stops.
+                drive.driveCartesian(-simpleFrontBack,
+                                     -simpleLeftRight,
                                      simpleRotation);
                 break;
             case TRAJECTORY:
@@ -296,8 +343,8 @@ public class VroomSubsystem extends SubsystemBase {
             case TELEOP:
                 // Teleop runs here
 
-                drive.driveCartesian(inputSubsystem.getFrontBack(),
-                        inputSubsystem.getLeftRight(),
+                drive.driveCartesian(-inputSubsystem.getFrontBack(),
+                        -inputSubsystem.getLeftRight(),
                         inputSubsystem.getRotation());
 
                 var wheelSpeeds = MecanumDrive.driveCartesianIK(inputSubsystem.getFrontBack(),
@@ -309,12 +356,12 @@ public class VroomSubsystem extends SubsystemBase {
                 debug.backLeft.setDouble(wheelSpeeds.rearLeft);
                 debug.backRight.setDouble(wheelSpeeds.rearRight);
 
-                // In order to measure drift, we will use the actual velocities and
-                // feeding those into driveCartesianIK
-                // kinematics.toChassisSpeeds()
-
                 drive.setExpiration(.1);
                 drive.feed();
+
+                debug.driftDegrees.setDouble(driftDetection(inputSubsystem.getFrontBack(), inputSubsystem.getLeftRight(), inputSubsystem.getRotation()));
+                System.out.println(driftDetection(inputSubsystem.getFrontBack(), inputSubsystem.getLeftRight(), inputSubsystem.getRotation()));
+
                 break;
         }
     }

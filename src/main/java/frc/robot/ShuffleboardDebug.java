@@ -30,6 +30,7 @@ public class ShuffleboardDebug {
     public GenericEntry frontRight;
     public GenericEntry backLeft;
     public GenericEntry backRight;
+    public GenericEntry driftDegrees;
 
     public GenericEntry forwardBack;
     public GenericEntry leftRight;
@@ -123,6 +124,11 @@ public class ShuffleboardDebug {
                 .withPosition(6, 0)
                 .withSize(2, 2)
                 .withWidget(BuiltInWidgets.kDial)
+                .getEntry();
+        driftDegrees = vroomTab.add("Drift degrees", 0)
+                .withPosition(8, 0)
+                .withSize(2, 2)
+                .withWidget(BuiltInWidgets.kGyro)
                 .getEntry();
     }
 }

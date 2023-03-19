@@ -53,6 +53,7 @@ public class RobotContainer {
       new WaitCommand(Constants.AUTON_BACKWARD_TIME_SECONDS), 
       new InstantCommand(() -> {
         // Start moving backward.
+        // Note: this actually makes the robot go forward
         driveSubsystem.setSimpleDrive(-1, 0, 0);
       })
     ).andThen(new InstantCommand(() -> {
